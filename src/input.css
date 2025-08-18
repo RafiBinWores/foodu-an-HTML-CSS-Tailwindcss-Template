@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@theme {
+  --font-jost: "Jost", "sans-serif";
+  --font-oswald: "Oswald", "sans-serif";
+
+  --color-customRed-100: #e80f3a;
+  --color-customRed-200: #c40d31;
+
+
+  --color-customSlate-100: #072b31;
+}

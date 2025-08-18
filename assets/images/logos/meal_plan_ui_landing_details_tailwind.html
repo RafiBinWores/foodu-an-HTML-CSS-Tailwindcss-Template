@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Foodu – Meal Plans</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--brand:#e11d48;} /* rose-600 */
+    .brand{color:var(--brand)}
+    .bg-brand{background:var(--brand)}
+    .ring-brand{--tw-ring-color:var(--brand)}
+    .shadow-soft{box-shadow:0 10px 25px rgba(0,0,0,.08)}
+    .glass{background:rgba(255,255,255,.08);backdrop-filter: blur(6px)}
+  </style>
+</head>
+<body class="bg-neutral-50 text-neutral-800 font-[Inter]">
+  <!-- Header -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-neutral-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <a href="#landing" class="flex items-center gap-2">
+        <div class="w-9 h-9 bg-brand grid place-items-center rounded-full text-white font-bold">🍽️</div>
+        <span class="font-[Oswald] text-2xl tracking-wide">FOODU</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-6 text-sm">
+        <a href="#packages" class="hover:text-brand">Plans</a>
+        <a href="#how" class="hover:text-brand">How it works</a>
+        <a href="#menu" class="hover:text-brand">Menu</a>
+      </nav>
+      <div class="flex items-center gap-3">
+        <button class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-neutral-200 hover:border-neutral-300">Sign in</button>
+        <button class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand text-white hover:opacity-90">Order now</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- LANDING PAGE -->
+  <main id="landing">
+    <!-- Hero -->
+    <section class="relative overflow-hidden">
+      <div class="absolute inset-0 -z-10" aria-hidden="true">
+        <div class="h-[480px] bg-[url('https://images.unsplash.com/photo-1546549039-494d0309ad12?q=80&w=1887&auto=format&fit=crop')] bg-cover bg-center"></div>
+      </div>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
+        <div class="max-w-3xl text-white">
+          <p class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-white/20 mb-4">Fresh • On time • Everyday</p>
+          <h1 class="font-[Oswald] leading-tight text-4xl sm:text-6xl font-bold">Your Lunch & Dinner, <span class="text-yellow-300">Sorted</span> Weekly or Monthly</h1>
+          <p class="mt-4 text-white/90 max-w-2xl">Pick a plan that fits your routine. Customize meals for each day and enjoy chef‑crafted dishes delivered hot.</p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a data-plan="weekly-combo" href="#details" class="book-plan inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-brand text-white shadow-soft">Book Weekly Plan</a>
+            <a data-plan="monthly-combo" href="#details" class="book-plan inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white text-neutral-900 shadow-soft">Book Monthly Plan</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Metrics strip -->
+    <section class="bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="p-6 rounded-2xl border border-neutral-200 bg-white shadow-sm text-center">
+          <div class="text-3xl font-bold brand">500+</div>
+          <div class="text-sm text-neutral-500">Menu & Dishes</div>
+        </div>
+        <div class="p-6 rounded-2xl border border-neutral-200 bg-white shadow-sm text-center">
+          <div class="text-3xl font-bold">30–45m</div>
+          <div class="text-sm text-neutral-500">Avg Delivery</div>
+        </div>
+        <div class="p-6 rounded-2xl border border-neutral-200 bg-white shadow-sm text-center">
+          <div class="text-3xl font-bold">4.8★</div>
+          <div class="text-sm text-neutral-500">Customer Rating</div>
+        </div>
+        <div class="p-6 rounded-2xl border border-neutral-200 bg-white shadow-sm text-center">
+          <div class="text-3xl font-bold">7 Days</div>
+          <div class="text-sm text-neutral-500">Flexible Pause</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Plans / Packages -->
+    <section id="packages" class="py-16 sm:py-20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-end justify-between gap-6 mb-8">
+          <div>
+            <h2 class="font-[Oswald] text-3xl sm:text-4xl">Choose your plan</h2>
+            <p class="text-neutral-600">Weekly for flexibility. Monthly for best value.</p>
+          </div>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6">
+          <!-- Weekly Lunch -->
+          <div class="rounded-2xl overflow-hidden border border-neutral-200 bg-white shadow-soft flex flex-col">
+            <img class="h-40 w-full object-cover" src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1887&auto=format&fit=crop" alt="Lunch" />
+            <div class="p-6 flex-1 flex flex-col">
+              <div class="text-xs uppercase tracking-wide text-neutral-500">Weekly</div>
+              <h3 class="font-semibold text-xl mt-1">Weekly Lunch Plan</h3>
+              <p class="text-sm text-neutral-600 mt-2">5 curated lunch meals, Mon–Fri. Skip or swap any day.</p>
+              <div class="mt-4 font-bold text-2xl">৳990<span class="text-sm font-medium text-neutral-500"> / week</span></div>
+              <div class="mt-auto pt-5">
+                <a href="#details" data-plan="weekly-lunch" class="book-plan w-full inline-flex justify-center items-center gap-2 px-4 py-3 rounded-xl bg-brand text-white hover:opacity-90">Book now</a>
+              </div>
+            </div>
+          </div>
+          <!-- Weekly Dinner -->
+          <div class="rounded-2xl overflow-hidden border border-neutral-200 bg-white shadow-soft flex flex-col">
+            <img class="h-40 w-full object-cover" src="https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1887&auto=format&fit=crop" alt="Dinner" />
+            <div class="p-6 flex-1 flex flex-col">
+              <div class="text-xs uppercase tracking-wide text-neutral-500">Weekly</div>
+              <h3 class="font-semibold text-xl mt-1">Weekly Dinner Plan</h3>
+              <p class="text-sm text-neutral-600 mt-2">7 home-style dinners with protein & sides. Fully customizable.</p>
+              <div class="mt-4 font-bold text-2xl">৳1490<span class="text-sm font-medium text-neutral-500"> / week</span></div>
+              <div class="mt-auto pt-5">
+                <a href="#details" data-plan="weekly-dinner" class="book-plan w-full inline-flex justify-center items-center gap-2 px-4 py-3 rounded-xl bg-brand text-white hover:opacity-90">Book now</a>
+              </div>
+            </div>
+          </div>
+          <!-- Monthly Combo -->
+          <div class="relative rounded-2xl overflow-hidden border border-neutral-200 bg-white shadow-soft flex flex-col">
+            <span class="absolute top-3 right-3 text-xs bg-yellow-300 text-neutral-900 px-2 py-1 rounded-full font-semibold">Best value</span>
+            <img class="h-40 w-full object-cover" src="https://images.unsplash.com/photo-1541745537413-b804ce43330f?q=80&w=1887&auto=format&fit=crop" alt="Combo" />
+            <div class="p-6 flex-1 flex flex-col">
+              <div class="text-xs uppercase tracking-wide text-neutral-500">Monthly</div>
+              <h3 class="font-semibold text-xl mt-1">Monthly Combo (Lunch + Dinner)</h3>
+              <p class="text-sm text-neutral-600 mt-2">4 weeks of lunch & dinner. Pause anytime. Free juice on Fridays.</p>
+              <div class="mt-4 font-bold text-2xl">৳4990<span class="text-sm font-medium text-neutral-500"> / month</span></div>
+              <div class="mt-auto pt-5">
+                <a href="#details" data-plan="monthly-combo" class="book-plan w-full inline-flex justify-center items-center gap-2 px-4 py-3 rounded-xl bg-brand text-white hover:opacity-90">Book now</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section id="how" class="bg-neutral-100 py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="font-[Oswald] text-3xl sm:text-4xl mb-10">How it works</h2>
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="p-6 rounded-2xl bg-white border border-neutral-200 shadow-sm">
+            <div class="w-12 h-12 rounded-xl bg-neutral-900 text-white grid place-items-center text-xl">1</div>
+            <h3 class="mt-4 font-semibold text-lg">Choose your plan</h3>
+            <p class="text-neutral-600 text-sm mt-1">Weekly lunch/dinner or monthly combo. Pick what suits you.</p>
+          </div>
+          <div class="p-6 rounded-2xl bg-white border border-neutral-200 shadow-sm">
+            <div class="w-12 h-12 rounded-xl bg-neutral-900 text-white grid place-items-center text-xl">2</div>
+            <h3 class="mt-4 font-semibold text-lg">Customize day‑wise meals</h3>
+            <p class="text-neutral-600 text-sm mt-1">Select dishes for Mon–Sun. Apply one meal to all days if you like.</p>
+          </div>
+          <div class="p-6 rounded-2xl bg-white border border-neutral-200 shadow-sm">
+            <div class="w-12 h-12 rounded-xl bg-neutral-900 text-white grid place-items-center text-xl">3</div>
+            <h3 class="mt-4 font-semibold text-lg">Checkout & enjoy</h3>
+            <p class="text-neutral-600 text-sm mt-1">We deliver fresh, on time. Pause or edit anytime from your account.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- DETAILS PAGE (in the same file for preview) -->
+  <section id="details" class="hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14">
+      <!-- Breadcrumb -->
+      <nav class="text-sm mb-6 text-neutral-500"><a href="#landing" class="hover:text-brand">Home</a> <span>/</span> <span>Meal Plan</span></nav>
+
+      <!-- Header -->
+      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8">
+        <div>
+          <h1 id="planTitle" class="font-[Oswald] text-3xl sm:text-4xl">Weekly Lunch Plan</h1>
+          <p id="planSubtitle" class="text-neutral-600">Customize your meals for the next 7 days.</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <label class="text-sm text-neutral-600">Start date</label>
+          <input id="startDate" type="date" class="px-3 py-2 rounded-xl border border-neutral-300 focus:outline-none focus:ring-2 ring-brand" />
+        </div>
+      </div>
+
+      <div class="grid lg:grid-cols-3 gap-6">
+        <!-- Meal grid -->
+        <div class="lg:col-span-2">
+          <!-- Week tabs (visible for monthly) -->
+          <div id="weekTabs" class="hidden mb-4 flex-wrap gap-2"></div>
+
+          <div class="rounded-2xl border border-neutral-200 bg-white shadow-sm overflow-hidden">
+            <div class="px-5 py-4 flex items-center justify-between bg-neutral-50 border-b">
+              <div class="font-semibold">Select your meals</div>
+              <button id="applyAllBtn" class="text-sm underline hover:text-brand">Apply Monday to all days</button>
+            </div>
+            <div id="daysContainer" class="divide-y">
+              <!-- rows injected via JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Summary -->
+        <aside class="lg:sticky lg:top-20 h-fit">
+          <div class="rounded-2xl border border-neutral-200 bg-white shadow-sm p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-sm text-neutral-500">Plan</div>
+                <div id="summaryPlan" class="font-semibold">Weekly Lunch</div>
+              </div>
+              <div class="text-right">
+                <div class="text-sm text-neutral-500">Price</div>
+                <div id="summaryPrice" class="font-bold">৳990 / week</div>
+              </div>
+            </div>
+            <div class="my-5 border-t"></div>
+            <div>
+              <div class="text-sm text-neutral-500 mb-2">Selected meals</div>
+              <ul id="summaryMeals" class="space-y-2 text-sm max-h-44 overflow-auto pr-1"></ul>
+            </div>
+            <div class="my-5 border-t"></div>
+            <div class="flex items-center justify-between font-semibold text-lg">
+              <span>Total</span>
+              <span id="summaryTotal">৳0</span>
+            </div>
+            <button class="mt-5 w-full bg-brand text-white px-4 py-3 rounded-xl hover:opacity-90">Confirm booking</button>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Add-ons -->
+      <div class="mt-10">
+        <h2 class="font-semibold text-lg mb-3">Add-ons</h2>
+        <div class="grid sm:grid-cols-3 gap-4">
+          <label class="flex items-center gap-3 p-4 rounded-2xl border bg-white">
+            <input type="checkbox" class="size-4" data-addon="Fresh Juice" data-price="50">
+            <span class="text-sm flex-1">Fresh Juice <span class="text-neutral-500">(৳50/day)</span></span>
+          </label>
+          <label class="flex items-center gap-3 p-4 rounded-2xl border bg-white">
+            <input type="checkbox" class="size-4" data-addon="Salad" data-price="40">
+            <span class="text-sm flex-1">Green Salad <span class="text-neutral-500">(৳40/day)</span></span>
+          </label>
+          <label class="flex items-center gap-3 p-4 rounded-2xl border bg-white">
+            <input type="checkbox" class="size-4" data-addon="Dessert" data-price="60">
+            <span class="text-sm flex-1">Dessert <span class="text-neutral-500">(৳60/day)</span></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="mt-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 border-t text-sm text-neutral-500">
+      © 2025 FOODU. All rights reserved.
+    </div>
+  </footer>
+
+  <script>
+    // --- Demo data ---
+    const MENU = [
+      { id: 'chicken-alfredo', name: 'Chicken Alfredo' },
+      { id: 'veg-biryani', name: 'Veg Biryani' },
+      { id: 'beef-bowl', name: 'Beef Rice Bowl' },
+      { id: 'pasta-arab', name: 'Pasta Arrabbiata' },
+      { id: 'grill-fish', name: 'Grilled Fish' }
+    ];
+
+    const PLAN_CONFIGS = {
+      'weekly-lunch': { title: 'Weekly Lunch Plan', subtitle: 'Customize your meals for the next 5 working days.', weeks: 1, days: ['Mon','Tue','Wed','Thu','Fri'], priceLabel: '৳990 / week', basePrice: 990 },
+      'weekly-dinner': { title: 'Weekly Dinner Plan', subtitle: 'Customize dinners for the next 7 days.', weeks: 1, days: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], priceLabel: '৳1490 / week', basePrice: 1490 },
+      'weekly-combo': { title: 'Weekly Combo (Lunch + Dinner)', subtitle: 'Customize lunch & dinner for 7 days.', weeks: 1, days: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], priceLabel: '৳1890 / week', basePrice: 1890 },
+      'monthly-combo': { title: 'Monthly Combo (Lunch + Dinner)', subtitle: 'Plan your meals for 4 weeks. Switch weeks below.', weeks: 4, days: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], priceLabel: '৳4990 / month', basePrice: 4990 }
+    };
+
+    // --- State ---
+    let currentPlanKey = 'weekly-lunch';
+    let selections = {}; // { weekIndex: { Mon: 'id', ... } }
+
+    // --- Helpers ---
+    const qs = (s, r=document) => r.querySelector(s);
+    const qsa = (s, r=document) => Array.from(r.querySelectorAll(s));
+
+    function setSectionVisible(hash){
+      const isDetails = hash === '#details';
+      qs('#landing').classList.toggle('hidden', isDetails);
+      qs('#details').classList.toggle('hidden', !isDetails);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderPlan(planKey){
+      currentPlanKey = planKey;
+      selections = {}; // reset
+      const cfg = PLAN_CONFIGS[planKey];
+      qs('#planTitle').textContent = cfg.title;
+      qs('#planSubtitle').textContent = cfg.subtitle;
+      qs('#summaryPlan').textContent = cfg.title.replace('Plan','');
+      qs('#summaryPrice').textContent = cfg.priceLabel;
+
+      // Week tabs
+      const tabs = qs('#weekTabs');
+      tabs.innerHTML = '';
+      if(cfg.weeks > 1){
+        tabs.classList.remove('hidden');
+        for(let i=0;i<cfg.weeks;i++){
+          const b = document.createElement('button');
+          b.type='button';
+          b.className='week-tab px-3 py-2 rounded-xl border text-sm bg-white hover:border-neutral-400';
+          b.dataset.week=i;
+          b.textContent = `Week ${i+1}`;
+          tabs.appendChild(b);
+        }
+      } else {
+        tabs.classList.add('hidden');
+      }
+
+      renderWeek(0);
+      qsa('.week-tab').forEach(btn=>btn.addEventListener('click',e=>{
+        qsa('.week-tab').forEach(x=>x.classList.remove('border-neutral-900','font-semibold'));
+        e.currentTarget.classList.add('border-neutral-900','font-semibold');
+        renderWeek(Number(e.currentTarget.dataset.week));
+      }));
+      if(qs('.week-tab')) qs('.week-tab').click();
+      updateSummary();
+    }
+
+    function renderWeek(weekIndex){
+      const cfg = PLAN_CONFIGS[currentPlanKey];
+      const wrap = qs('#daysContainer');
+      wrap.innerHTML = '';
+      if(!selections[weekIndex]) selections[weekIndex] = {};
+
+      cfg.days.forEach((d, idx)=>{
+        const row = document.createElement('div');
+        row.className = `grid grid-cols-1 md:grid-cols-6 items-center gap-3 p-4 ${idx%2? 'bg-white':'bg-neutral-50'}`;
+        row.innerHTML = `
+          <div class="md:col-span-1 font-medium">${d}</div>
+          <div class="md:col-span-3">
+            <select class="mealSel w-full px-3 py-2 rounded-xl border border-neutral-300 focus:outline-none focus:ring-2 ring-brand">
+              <option value="">Select a dish…</option>
+              ${MENU.map(m=>`<option value="${m.id}">${m.name}</option>`).join('')}
+            </select>
+          </div>
+          <div class="md:col-span-2">
+            <input placeholder="Notes / no onion, extra spicy…" class="w-full px-3 py-2 rounded-xl border border-neutral-300 focus:outline-none focus:ring-2 ring-brand" />
+          </div>`;
+        wrap.appendChild(row);
+        const sel = row.querySelector('.mealSel');
+        sel.value = selections[weekIndex][d] || '';
+        sel.addEventListener('change', ()=>{
+          selections[weekIndex][d] = sel.value;
+          updateSummary();
+        });
+      });
+
+      // Apply all
+      qs('#applyAllBtn').onclick = ()=>{
+        const firstSel = wrap.querySelector('.mealSel');
+        if(!firstSel) return;
+        const val = firstSel.value;
+        wrap.querySelectorAll('.mealSel').forEach((s,i)=>{ s.value = val; selections[weekIndex][cfg.days[i]] = val;});
+        updateSummary();
+      };
+    }
+
+    function updateSummary(){
+      const cfg = PLAN_CONFIGS[currentPlanKey];
+      const list = qs('#summaryMeals');
+      list.innerHTML = '';
+      let count = 0;
+      Object.values(selections).forEach(week=>{
+        Object.entries(week).forEach(([day,val])=>{
+          if(!val) return; count++;
+          const item = MENU.find(m=>m.id===val);
+          const li = document.createElement('li');
+          li.textContent = `${day}: ${item?.name || '—'}`;
+          list.appendChild(li);
+        });
+      });
+      const addons = qsa('[data-addon]:checked').reduce((sum,el)=> sum + Number(el.dataset.price), 0);
+      const perDayAddon = addons; // each addon is priced per day in demo
+      const total = cfg.basePrice + perDayAddon * count;
+      qs('#summaryTotal').textContent = `৳${total}`;
+    }
+
+    // --- Event wiring ---
+    qsa('.book-plan').forEach(el=>{
+      el.addEventListener('click', (e)=>{
+        const key = e.currentTarget.dataset.plan || 'weekly-lunch';
+        setTimeout(()=>renderPlan(key), 50);
+      });
+    });
+
+    qsa('[data-addon]').forEach(el=> el.addEventListener('change', updateSummary));
+
+    // Hash routing
+    function onHash(){ setSectionVisible(location.hash || '#landing'); }
+    window.addEventListener('hashchange', onHash); onHash();
+
+    // If user directly landed on details without choosing, initialize default
+    if(location.hash === '#details'){ renderPlan('weekly-lunch'); }
+  </script>
+</body>
+</html>
