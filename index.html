@@ -75,7 +75,7 @@
           </ul>
         </li>
 
-        <li><a href="#" class="hover:opacity-80">Shop</a></li>
+        <li><a href="shop.html" class="hover:opacity-80">Shop</a></li>
         <li><a href="#" class="hover:opacity-80">Contact</a></li>
         <li><a href="#" class="hover:opacity-80">About</a></li>
       </ul>
@@ -161,7 +161,7 @@
 
         <!-- Account icon -->
         <a href="#"
-     class="grid border rounded-full border-slate-900 w-10 h-10 sm:w-12 sm:h-12 place-items-center hover:bg-slate-900 group flex-none">
+     class="grid border rounded-full border-slate-900 w-10 h-10 sm:w-12 sm:h-12 place-items-center hover:bg-slate-900 group duration-200 flex-none">
     <i class="fa-regular fa-user group-hover:text-white"></i>
   </a>
       </div>
@@ -187,7 +187,7 @@
         <li>
           <button @click="catOpen = !catOpen" class="w-full flex justify-between items-center hover:bg-slate-100">
             <span class="px-5 py-4">Categories</span>
-            <svg class="w-4 h-4 transition-transform" :class="catOpen ? 'rotate-180' : ''" fill="none"
+            <svg class="w-4 h-4 transition-transform me-4" :class="catOpen ? 'rotate-180' : ''" fill="none"
               stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
@@ -222,6 +222,7 @@
     <!-- Overlay (for sidebar) -->
     <div id="menuOverlay" class="hidden fixed inset-0 bg-black/40 z-30 lg:hidden"></div>
   </header>
+  <!-- Header end -->
 
 
   
@@ -1080,9 +1081,10 @@
   <!-- sidebar -->
   <script src="./assets/js/sidebar.js"></script>
 
+  <!-- Tabs -->
   <script src="./assets/js/tabs.js"></script>
 
-  <!-- Swiper JS -->
+  <!-- offcanvas -->
 <script>
   function cartDrawer() {
     return {
