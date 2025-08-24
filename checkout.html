@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Checkout — Weekly Plan</title>
+
+  <!-- Tailwind + DaisyUI (CDN for demo; remove if you already bundle) -->
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Optional: Fonts to match your UI -->
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500&family=Jost:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    .font-oswald{font-family:"Oswald",system-ui,ui-sans-serif;}
+    .font-jost{font-family:"Jost",system-ui,ui-sans-serif;}
+  </style>
+</head>
+<body class="bg-base-200 text-base-content">
+  <div class="max-w-7xl px-4 mx-auto py-8 md:py-10">
+    <!-- Header -->
+    <div class="flex items-center justify-between gap-3 mb-6">
+      <div>
+        <h1 class="font-oswald text-3xl md:text-4xl">Checkout</h1>
+        <p class="font-jost text-base-content/70">Review your weekly plan and enter delivery details.</p>
+      </div>
+      <button id="backBtn" class="btn btn-ghost">← Back to Planner</button>
+    </div>
+
+    <!-- Grid -->
+    <div class="grid grid-cols-12 gap-6">
+      <!-- Left: Customer / Delivery / Payment -->
+      <div class="col-span-12 lg:col-span-7 space-y-6">
+        <!-- Delivery Info -->
+        <section class="card bg-base-100 shadow">
+          <div class="card-body">
+            <h2 class="font-oswald text-xl">Delivery Details</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+              <label class="form-control">
+                <span class="label-text">Full Name</span>
+                <input id="fullName" type="text" class="input input-bordered" placeholder="Your name">
+              </label>
+              <label class="form-control">
+                <span class="label-text">Phone</span>
+                <input id="phone" type="tel" class="input input-bordered" placeholder="01XXXXXXXXX">
+              </label>
+              <label class="form-control md:col-span-2">
+                <span class="label-text">Address</span>
+                <input id="address" type="text" class="input input-bordered" placeholder="House, Street, Area">
+              </label>
+              <label class="form-control">
+                <span class="label-text">City</span>
+                <input id="city" type="text" class="input input-bordered" placeholder="City">
+              </label>
+              <label class="form-control">
+                <span class="label-text">Postal Code</span>
+                <input id="zip" type="text" class="input input-bordered" placeholder="ZIP">
+              </label>
+            </div>
+
+            <!-- Optional delivery notes -->
+            <label class="form-control mt-3">
+              <span class="label-text">Notes (optional)</span>
+              <textarea id="notes" class="textarea textarea-bordered" rows="3" placeholder="Gate code, call on arrival, etc."></textarea>
+            </label>
+
+            <!-- Delivery date summary -->
+            <div class="mt-4">
+              <div class="flex items-center justify-between">
+                <p class="text-sm text-base-content/70">Plan start date</p>
+                <p id="startDateText" class="text-sm font-medium">Not set</p>
+              </div>
+              <div id="calendarSummary" class="mt-2 grid md:grid-cols-2 gap-2"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Payment -->
+        <section class="card bg-base-100 shadow">
+          <div class="card-body">
+            <h2 class="font-oswald text-xl">Payment</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+              <label class="form-control">
+                <span class="label-text">Method</span>
+                <select id="paymentMethod" class="select select-bordered">
+                  <option value="">Select payment method</option>
+                  <option value="cod">Cash on Delivery (COD)</option>
+                  <option value="card">Card</option>
+                  <option value="bkash">bKash</option>
+                  <option value="nagad">Nagad</option>
+                </select>
+              </label>
+              <label class="form-control">
+                <span class="label-text">Promo Code (optional)</span>
+                <div class="join">
+                  <input id="promoInput" type="text" class="input input-bordered join-item" placeholder="e.g., SAVE50">
+                  <button id="applyPromoBtn" class="btn btn-primary join-item">Apply</button>
+                </div>
+                <span id="promoMsg" class="text-xs mt-1"></span>
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <!-- Terms -->
+        <section class="card bg-base-100 shadow">
+          <div class="card-body">
+            <h2 class="font-oswald text-xl">Confirm</h2>
+            <label class="label cursor-pointer justify-start gap-3">
+              <input id="agree" type="checkbox" class="checkbox checkbox-primary">
+              <span class="label-text">I agree to the Terms & Conditions</span>
+            </label>
+
+            <button id="placeOrderBtn" class="btn btn-primary mt-3 w-full md:w-auto">Place Order</button>
+            <p id="formError" class="text-error text-sm mt-2 hidden">Please fill required fields and agree to the terms.</p>
+          </div>
+        </section>
+      </div>
+
+      <!-- Right: Order Summary -->
+      <aside class="col-span-12 lg:col-span-5">
+        <div class="lg:sticky lg:top-6">
+          <div class="card bg-base-100 shadow">
+            <div class="card-body">
+              <div class="flex items-center justify-between">
+                <h2 class="font-oswald text-xl">Order Summary</h2>
+                <span id="itemCount" class="badge badge-outline">0 items</span>
+              </div>
+
+              <div id="summaryList" class="mt-3 space-y-4"></div>
+
+              <div class="divider my-2"></div>
+
+              <div class="space-y-1 text-sm">
+                <div class="flex justify-between"><span>Subtotal</span><span id="subTotal">৳0</span></div>
+                <div class="flex justify-between"><span>Delivery</span><span id="deliveryFee">৳40</span></div>
+                <div class="flex justify-between"><span>Discount</span><span id="discount">-৳0</span></div>
+              </div>
+              <div class="flex justify-between items-center mt-2">
+                <span class="font-semibold text-lg">Total</span>
+                <span id="grandTotal" class="font-bold text-lg">৳0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty state -->
+          <div id="emptyState" class="hidden mt-4">
+            <div class="card bg-base-100 shadow">
+              <div class="card-body">
+                <p class="font-medium">Your weekly plan is empty.</p>
+                <p class="text-sm text-base-content/70">Go back and add some dishes first.</p>
+                <button id="goPlanBtn" class="btn btn-primary mt-2">Back to Planner</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </aside>
+    </div>
+  </div>
+
+<script>
+  // ===== Data (same pricing as planner) =====
+  const DAYS = ["SATURDAY","SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"];
+  const SLOT_LABEL = { breakfast:"Breakfast", lunch:"Lunch", tiffin:"Tiffin", dinner:"Dinner" };
+
+  const DISHES = [
+    { id:"chicken_bowl",  name:"Chicken Bowl",  price:220, img:"https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&q=80&auto=format&fit=crop" },
+    { id:"beef_curry",    name:"Beef Curry",    price:260, img:"https://images.unsplash.com/photo-1596797038530-2c107229654b?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
+    { id:"veg_mixed",     name:"Veg Mixed",     price:180, img:"https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&q=80&auto=format&fit=crop" },
+    { id:"pasta_alfredo", name:"Pasta Alfredo", price:240, img:"https://images.unsplash.com/photo-1611270629569-8b357cb88da9?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
+    { id:"fish_grill",    name:"Grilled Fish",  price:280, img:"https://images.unsplash.com/photo-1553621042-f6e147245754?w=800&q=80&auto=format&fit=crop" },
+    { id:"khichuri_egg",  name:"Khichuri & Egg",price:160, img:"https://images.unsplash.com/photo-1526318472351-c75fcf070305?w=800&q=80&auto=format&fit=crop" },
+  ];
+  const SIDES  = [{ id:"salad", name:"Green Salad", price:60 },{ id:"fries", name:"Fries", price:90 },{ id:"bread", name:"Garlic Bread", price:70 }];
+  const DRINKS = [{ id:"water", name:"Mineral Water", price:20 },{ id:"soda", name:"Soft Drink", price:40 },{ id:"juice", name:"Fresh Juice", price:120 }];
+  const PLACEHOLDER_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='90'%3E%3Crect width='100%25' height='100%25' fill='%23e5e7eb'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%239ca3af' font-family='Arial' font-size='12'%3ENo image%3C/text%3E%3C/svg%3E";
+
+  const STORAGE_KEY = "weekly_plan_state_min";
+  const DELIVERY_FEE = 40;
+
+  // ===== State =====
+  let state = {
+    mealPrefs: new Set(),
+    selections: [],
+    startDate: null,
+    discountAmount: 0,
+    promoCode: null,
+  };
+
+  // ===== Helpers =====
+  const dishById = (id) => DISHES.find(d=>d.id===id);
+  const fmtBdt = (n) => `৳${n}`;
+
+  function addonNames(ids) {
+    return ids.map((id) => {
+      const s = SIDES.find((x) => x.id === id); if (s) return s.name;
+      const d = DRINKS.find((x) => x.id === id); if (d) return d.name;
+      return null;
+    }).filter(Boolean);
+  }
+  function addonsCost(it) {
+    const sides = (it.sides||[]).reduce((sum,id)=> sum + (SIDES.find(x=>x.id===id)?.price||0), 0);
+    const drinks= (it.drinks||[]).reduce((sum,id)=> sum + (DRINKS.find(x=>x.id===id)?.price||0), 0);
+    return sides + drinks;
+  }
+
+  function loadFromStorage() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const data = JSON.parse(raw);
+      state.mealPrefs = new Set(Array.isArray(data.mealPrefs) ? data.mealPrefs : []);
+      state.selections = Array.isArray(data.selections) ? data.selections : [];
+      state.startDate = data.startDate || null;
+    } catch {}
+  }
+
+  // Only include items from currently-selected meal preferences
+  function selectedSlots() {
+    return Array.from(state.mealPrefs || []); // e.g., ["breakfast","tiffin"]
+  }
+
+  // Flatten across days & slots, but only allowed slots
+  function allItems() {
+    const allowed = new Set(selectedSlots());
+    if (allowed.size === 0) return []; // nothing selected → nothing to show
+
+    const items = [];
+    state.selections.forEach((day, dayIdx) => {
+      ["breakfast","lunch","tiffin","dinner"].forEach(slot => {
+        if (!allowed.has(slot)) return;
+        const arr = day?.[slot]?.items || [];
+        arr.forEach((it, idx) => {
+          const dish = dishById(it.dishId);
+          items.push({
+            dayIdx, slot, itemIndex: idx,
+            dishId: it.dishId,
+            dishName: dish?.name || "Dish",
+            dishPrice: dish?.price || 0,
+            sides: it.sides || [],
+            drinks: it.drinks || []
+          });
+        });
+      });
+    });
+    return items;
+  }
+
+  // Make 7 dates from startDate (YYYY-MM-DD)
+  function weeklyDates() {
+    const out = [];
+    if (!state.startDate) return out;
+    const base = new Date(state.startDate + "T00:00:00");
+    for (let i=0;i<7;i++){
+      const d = new Date(base);
+      d.setDate(d.getDate()+i);
+      out.push(d);
+    }
+    return out;
+  }
+  const dd = (n)=> String(n).padStart(2,"0");
+  function fmtDate(d){ return `${d.getFullYear()}-${dd(d.getMonth()+1)}-${dd(d.getDate())}`; }
+
+  // ===== Render Calendar Summary (left) =====
+  function renderCalendarSummary() {
+    const wrap = document.getElementById("calendarSummary");
+    const txt = document.getElementById("startDateText");
+    wrap.innerHTML = "";
+    if (!state.startDate) {
+      txt.textContent = "Not set";
+      return;
+    }
+    txt.textContent = state.startDate;
+    const dates = weeklyDates();
+    for (let i=0;i<7;i++){
+      const box = document.createElement("div");
+      box.className = "border border-base-300 rounded-lg p-3 bg-base-100";
+      box.innerHTML = `
+        <div class="text-xs text-base-content/60">${DAYS[i]}</div>
+        <div class="text-sm font-medium">${dates[i] ? fmtDate(dates[i]) : "-"}</div>
+      `;
+      wrap.appendChild(box);
+    }
+  }
+
+  // ===== Summary UI =====
+  function renderSummary() {
+    const listEl = document.getElementById("summaryList");
+    const itemCountEl = document.getElementById("itemCount");
+    const subTotalEl = document.getElementById("subTotal");
+    const deliveryEl = document.getElementById("deliveryFee");
+    const discountEl = document.getElementById("discount");
+    const grandEl = document.getElementById("grandTotal");
+    const empty = document.getElementById("emptyState");
+
+    const items = allItems();
+
+    // Empty state
+    if (items.length === 0) {
+      empty.classList.remove("hidden");
+    } else {
+      empty.classList.add("hidden");
+    }
+
+    // Group by day & slot for display
+    listEl.innerHTML = "";
+    const groups = {}; // key = `${dayIdx}-${slot}`
+    items.forEach((it) => {
+      const key = `${it.dayIdx}-${it.slot}`;
+      if (!groups[key]) groups[key] = { dayIdx: it.dayIdx, slot: it.slot, rows: [] };
+      groups[key].rows.push(it);
+    });
+
+    // Totals
+    let subtotal = 0;
+
+    Object.values(groups).sort((a,b) => a.dayIdx - b.dayIdx).forEach(group => {
+      const dayName = DAYS[group.dayIdx];
+      const slotName = SLOT_LABEL[group.slot] || group.slot;
+
+      const groupCard = document.createElement("div");
+      groupCard.className = "border border-base-300 rounded-xl";
+
+      // Header
+      groupCard.innerHTML = `
+        <div class="px-3 py-2 border-b border-base-300 bg-base-200/60 rounded-t-xl flex items-center justify-between">
+          <div class="text-sm font-medium">${dayName} • ${slotName}</div>
+          <div class="text-xs text-base-content/60">${group.rows.length} item(s)</div>
+        </div>
+        <div class="p-3 space-y-2"></div>
+      `;
+
+      const body = groupCard.querySelector("div.p-3");
+      group.rows.forEach((row) => {
+        const addNames = addonNames([...(row.sides||[]), ...(row.drinks||[])]);
+        const addCost = addonsCost(row);
+        const lineTotal = row.dishPrice + addCost;
+        subtotal += lineTotal;
+
+        const img = dishById(row.dishId)?.img || PLACEHOLDER_IMG;
+
+        const line = document.createElement("div");
+        line.className = "flex items-center justify-between gap-3 bg-base-100 border border-base-200 rounded-lg p-2 overflow-hidden";
+        line.innerHTML = `
+          <div class="flex items-center gap-2 flex-1 min-w-0">
+            <img src="${img}" class="w-12 h-12 rounded-md object-cover shrink-0" alt="">
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-medium truncate">${row.dishName}</div>
+              <div class="text-xs text-base-content/60 truncate">${addNames.length ? addNames.join(", ") : "No add-ons"}</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 shrink-0">
+            <div class="text-sm text-right leading-tight">
+              <div>${fmtBdt(row.dishPrice)}</div>
+              ${addCost ? `<div class="text-xs text-base-content/60">+ ${fmtBdt(addCost)}</div>` : ""}
+            </div>
+            <button class="btn btn-sm btn-error text-white" data-remove='${JSON.stringify({d:row.dayIdx,s:row.slot,i:row.itemIndex})}'>Remove</button>
+          </div>
+        `;
+        body.appendChild(line);
+      });
+
+      listEl.appendChild(groupCard);
+    });
+
+    itemCountEl.textContent = `${items.length} item${items.length!==1?"s":""}`;
+    subTotalEl.textContent = fmtBdt(subtotal);
+    deliveryEl.textContent = fmtBdt(DELIVERY_FEE);
+    discountEl.textContent = `-${fmtBdt(state.discountAmount)}`;
+    const grand = Math.max(0, subtotal + DELIVERY_FEE - state.discountAmount);
+    grandEl.textContent = fmtBdt(grand);
+
+    // Bind remove
+    listEl.querySelectorAll("button[data-remove]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const {d,s,i} = JSON.parse(btn.getAttribute("data-remove"));
+        const arr = state.selections?.[d]?.[s]?.items;
+        if (!arr || i<0 || i>=arr.length) return;
+        arr.splice(i,1);
+        persist();
+        renderSummary();
+      });
+    });
+  }
+
+  // ===== Promo =====
+  function applyPromo(code) {
+    // Demo: SAVE50 => ৳50 off, SAVE10 => 10% off subtotal (capped 300)
+    code = (code||"").trim().toUpperCase();
+    const msgEl = document.getElementById("promoMsg");
+    state.discountAmount = 0;
+    state.promoCode = null;
+
+    const items = allItems();
+    const subtotal = items.reduce((acc, it) => {
+      const dish = dishById(it.dishId);
+      return acc + (dish?.price||0) + addonsCost(it);
+    }, 0);
+
+    if (!code) { msgEl.textContent = ""; renderSummary(); return; }
+
+    if (code === "SAVE50") {
+      state.discountAmount = Math.min(50, subtotal);
+      state.promoCode = code;
+      msgEl.textContent = "Promo applied: ৳50 off";
+      msgEl.className = "text-xs mt-1 text-success";
+    } else if (code === "SAVE10") {
+      const d = Math.min(Math.round(subtotal * 0.10), 300);
+      state.discountAmount = d;
+      state.promoCode = code;
+      msgEl.textContent = "Promo applied: 10% off (max ৳300)";
+      msgEl.className = "text-xs mt-1 text-success";
+    } else {
+      msgEl.textContent = "Invalid promo code";
+      msgEl.className = "text-xs mt-1 text-error";
+    }
+    renderSummary();
+  }
+
+  function persist() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        mealPrefs: Array.from(state.mealPrefs),
+        selections: state.selections,
+        startDate: state.startDate
+      }));
+    } catch {}
+  }
+
+  // ===== Place Order =====
+  function placeOrder() {
+    const name = document.getElementById("fullName").value.trim();
+    const phone= document.getElementById("phone").value.trim();
+    const addr = document.getElementById("address").value.trim();
+    const city = document.getElementById("city").value.trim();
+    const zip  = document.getElementById("zip").value.trim();
+    const pm   = document.getElementById("paymentMethod").value;
+    const agree= document.getElementById("agree").checked;
+
+    const items = allItems();
+    const hasItems = items.length > 0;
+
+    const errEl = document.getElementById("formError");
+    if (!hasItems || !name || !phone || !addr || !city || !zip || !pm || !agree) {
+      errEl.classList.remove("hidden");
+      return;
+    }
+    errEl.classList.add("hidden");
+
+    const subtotal = items.reduce((acc, it) => {
+      const dish = dishById(it.dishId);
+      return acc + (dish?.price||0) + addonsCost(it);
+    }, 0);
+    const orderTotal = Math.max(0, subtotal + DELIVERY_FEE - state.discountAmount);
+
+    const order = {
+      id: "ORD-" + Math.random().toString(36).slice(2,8).toUpperCase(),
+      createdAt: new Date().toISOString(),
+      customer: { name, phone, address: addr, city, zip },
+      startDate: state.startDate || null,
+      payment: { method: pm, promoCode: state.promoCode || null },
+      items: items.map(it => ({
+        day: DAYS[it.dayIdx],
+        slot: SLOT_LABEL[it.slot] || it.slot,
+        dishId: it.dishId,
+        dishName: it.dishName,
+        sides: it.sides,
+        drinks: it.drinks
+      })),
+      pricing: {
+        subtotal, delivery: DELIVERY_FEE, discount: state.discountAmount, total: orderTotal
+      }
+    };
+
+    // Demo: show payload and clear plan
+    alert("Order placed!\n\n" + JSON.stringify(order, null, 2));
+    // Optional: clear after order
+    // localStorage.removeItem(STORAGE_KEY);
+    // location.href = "index.html";
+  }
+
+  // ===== Events =====
+  document.getElementById("applyPromoBtn").addEventListener("click", (e) => {
+    e.preventDefault();
+    const code = document.getElementById("promoInput").value;
+    applyPromo(code);
+  });
+  document.getElementById("placeOrderBtn").addEventListener("click", placeOrder);
+
+  document.getElementById("backBtn").addEventListener("click", () => history.back());
+  document.getElementById("goPlanBtn")?.addEventListener("click", () => history.back());
+
+  // ===== Init =====
+  loadFromStorage();
+  renderCalendarSummary();
+  renderSummary();
+</script>
+</body>
+</html>
