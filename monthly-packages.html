@@ -402,76 +402,49 @@
     </div>
   </div>
 
-  <!-- Meal Preference (Required) -->
-  <div class="bg-customRed-100/10 mt-6 px-4 pt-4 pb-8 md:pt-4 md:pb-8 rounded-xl">
+  <!-- Meal Preference (multi-select) -->
+  <div class="bg-customRed-100/10 mt-6 px-4 pt-4 pb-6 md:pt-4 md:pb-6 rounded-xl">
     <div class="flex items-center justify-between mb-2">
       <h4 class="font-oswald font-medium text-lg text-slate-900 flex items-center gap-2">
         Meal Preference
         <span class="text-customRed-100">*</span>
       </h4>
-      <span class="bg-customRed-100 text-white font-jost px-2 py-1 rounded-full text-xs">Required</span>
+      <span class="bg-customRed-100 text-white font-jost px-2 py-1 rounded-full text-xs">Choose one or more</span>
     </div>
 
-    <p class="font-jost text-sm text-gray-600 mb-4">Choose which meals are included in this monthly plan.</p>
+    <p class="font-jost text-sm text-gray-600 mb-4">Select which meal slots you want to plan. You can pick Breakfast, Lunch, and/or Dinner; choose differently per day while planning.</p>
 
-    <div class="font-jost text-gray-700 gap-3 md:gap-4 flex flex-wrap" id="mealPrefGroup">
-      <!-- One-meal options -->
+    <div id="mealPrefGroup" class="font-jost text-gray-700 gap-3 md:gap-4 flex flex-wrap">
       <label class="border border-gray-400 rounded-lg px-4 py-3 hover:bg-white/60 transition cursor-pointer flex items-center gap-2">
-        <input type="radio" name="meal_preference" value="breakfast" class="radio radio-primary radio-sm" required />
+        <input type="checkbox" id="pref_breakfast" value="breakfast" class="checkbox checkbox-primary checkbox-sm" />
         <span class="text-base">Breakfast</span>
       </label>
       <label class="border border-gray-400 rounded-lg px-4 py-3 hover:bg-white/60 transition cursor-pointer flex items-center gap-2">
-        <input type="radio" name="meal_preference" value="lunch" class="radio radio-primary radio-sm" required />
+        <input type="checkbox" id="pref_lunch" value="lunch" class="checkbox checkbox-primary checkbox-sm" />
         <span class="text-base">Lunch</span>
       </label>
       <label class="border border-gray-400 rounded-lg px-4 py-3 hover:bg-white/60 transition cursor-pointer flex items-center gap-2">
-        <input type="radio" name="meal_preference" value="dinner" class="radio radio-primary radio-sm" required />
+        <input type="checkbox" id="pref_dinner" value="dinner" class="checkbox checkbox-primary checkbox-sm" />
         <span class="text-base">Dinner</span>
-      </label>
-
-      <!-- Two-meal combos -->
-      <label class="border border-gray-400 rounded-lg px-4 py-3 hover:bg-white/60 transition cursor-pointer flex items-center gap-2">
-        <input type="radio" name="meal_preference" value="breakfast_lunch" class="radio radio-primary radio-sm" required />
-        <span class="text-base">Breakfast &amp; Lunch</span>
-      </label>
-      <label class="border border-gray-400 rounded-lg px-4 py-3 hover:bg-white/60 transition cursor-pointer flex items-center gap-2">
-        <input type="radio" name="meal_preference" value="breakfast_dinner" class="radio radio-primary radio-sm" required />
-        <span class="text-base">Breakfast &amp; Dinner</span>
-      </label>
-      <label class="border border-gray-400 rounded-lg px-4 py-3 hover:bg-white/60 transition cursor-pointer flex items-center gap-2">
-        <input type="radio" name="meal_preference" value="lunch_dinner" class="radio radio-primary radio-sm" required />
-        <span class="text-base">Lunch &amp; Dinner</span>
-      </label>
-
-      <!-- Three-meal combo -->
-      <label class="border border-gray-400 rounded-lg px-4 py-3 hover:bg-white/60 transition cursor-pointer flex items-center gap-2">
-        <input type="radio" name="meal_preference" value="all" class="radio radio-primary radio-sm" required />
-        <span class="text-base">Breakfast, Lunch &amp; Dinner</span>
-      </label>
-
-      <!-- Special -->
-      <label class="border border-gray-400 rounded-lg px-4 py-3 hover:bg-white/60 transition cursor-pointer flex items-center gap-2">
-        <input type="radio" name="meal_preference" value="tiffin" class="radio radio-primary radio-sm" required />
-        <span class="text-base">Student Tiffin</span>
       </label>
     </div>
   </div>
 
   <!-- Week Tabs (after Meal Preferences) -->
-<div class="bg-customRed-100/10 p-4 rounded-2xl mt-6">
-  <div id="weekTabs" class="mt-2 flex items-center justify-between gap-3 flex-wrap">
-    <div class="tabs tabs-boxed w-fit bg-customRed-100/80 text-white shadow-sm rounded-xl overflow-hidden">
-      <button data-week="0" class="tab tab-active font-oswald text-sm md:text-base px-4 py-2 transition-colors">Week 1</button>
-      <button data-week="1" class="tab font-oswald text-sm md:text-base px-4 py-2 transition-colors">Week 2</button>
-      <button data-week="2" class="tab font-oswald text-sm md:text-base px-4 py-2 transition-colors">Week 3</button>
-      <button data-week="3" class="tab font-oswald text-sm md:text-base px-4 py-2 transition-colors">Week 4</button>
+  <div class="bg-customRed-100/10 p-4 rounded-2xl mt-6 shadow-md border border-customRed-100/30">
+    <div id="weekTabs" class="mt-2 flex items-center justify-between gap-3 flex-wrap">
+      <div class="tabs tabs-boxed w-fit bg-white shadow-sm rounded-xl overflow-hidden">
+        <button data-week="0" class="tab tab-active font-oswald text-sm md:text-base px-4 py-2 transition-colors">Week 1</button>
+        <button data-week="1" class="tab font-oswald text-sm md:text-base px-4 py-2 transition-colors">Week 2</button>
+        <button data-week="2" class="tab font-oswald text-sm md:text-base px-4 py-2 transition-colors">Week 3</button>
+        <button data-week="3" class="tab font-oswald text-sm md:text-base px-4 py-2 transition-colors">Week 4</button>
+      </div>
+      <button id="copyWeek1Btn" class="btn btn-sm btn-outline rounded-lg font-oswald hover:bg-customRed-100 hover:text-white transition">
+        Copy Week 1 → All Weeks
+      </button>
     </div>
-    <button id="copyWeek1Btn" class="btn btn-sm btn-outline rounded-lg font-oswald hover:bg-customRed-100 hover:text-white transition">
-      Copy Week 1 → All Weeks
-    </button>
+    <p class="text-xs text-slate-600 mt-3 italic">💡 Tip: Plan Week 1 first, then use the button to duplicate it to all remaining weeks.</p>
   </div>
-  <p class="text-xs text-slate-600 mt-3 italic">💡 Tip: Plan Week 1 first, then use the button to duplicate it to all remaining weeks. And if you want you can change meal for any day of any week.</p>
-</div>
 
   <!-- Selected Meals Summary -->
   <div class="grid grid-cols-12 gap-6 mt-6">
@@ -602,20 +575,8 @@
     { id: "juice", name: "Fresh Juice", price: 120 },
   ];
 
-  // ========= Meal Preference → Slots mapping =========
-  const PREF_SLOTS = {
-    breakfast: ["breakfast"],
-    lunch: ["lunch"],
-    dinner: ["dinner"],
-    breakfast_lunch: ["breakfast","lunch"],
-    breakfast_dinner: ["breakfast","dinner"],
-    lunch_dinner: ["lunch","dinner"],
-    all: ["breakfast","lunch","dinner"],
-    tiffin: ["lunch"], // map Student Tiffin to Lunch slot
-  };
-
   // ========= Storage helpers =========
-  const STORAGE_KEY = "monthly_plan_state_v1";
+  const STORAGE_KEY = "monthly_plan_state_v2"; // v2 to support multi-select prefs
   const LEGACY_WEEKLY_KEY = "weekly_plan_state_v1"; // migrate old weekly -> month week1
 
   function saveToStorage() {
@@ -624,7 +585,7 @@
       localStorage.setItem(
         STORAGE_KEY,
         JSON.stringify({
-          mealPref: state.mealPref,
+          mealPrefs: Array.from(state.mealPrefs),
           monthlySelections: state.monthlySelections,
           currentWeekIndex: state.currentWeekIndex,
           startDate: startDateEl ? startDateEl.value : null,
@@ -634,6 +595,19 @@
   }
 
   function migrateFromLegacyWeekly() {
+    // Try v1 monthly first
+    const v1 = localStorage.getItem("monthly_plan_state_v1");
+    if (v1) {
+      try {
+        const data = JSON.parse(v1);
+        if (Array.isArray(data.monthlySelections)) state.monthlySelections = data.monthlySelections;
+        if (typeof data.mealPref === 'string') applyLegacyMealPref(data.mealPref);
+        if (Number.isInteger(data.currentWeekIndex)) state.currentWeekIndex = Math.max(0, Math.min(3, data.currentWeekIndex));
+        const startDateEl = document.getElementById("startDate");
+        if (startDateEl && data.startDate) startDateEl.value = data.startDate;
+      } catch(_){}
+    }
+    // Legacy weekly -> week 1
     const raw = localStorage.getItem(LEGACY_WEEKLY_KEY);
     if (!raw) return;
     try {
@@ -641,11 +615,11 @@
       if (Array.isArray(data.selections) && data.selections.length === DAYS.length) {
         state.monthlySelections[0] = data.selections.map((s) => ({
           breakfast: { dishId: s?.breakfast?.dishId ?? null, sides: Array.isArray(s?.breakfast?.sides) ? s.breakfast.sides : [], drinks: Array.isArray(s?.breakfast?.drinks) ? s.breakfast.drinks : [], },
-          lunch:     { dishId: s?.lunch?.dishId ?? null, sides: Array.isArray(s?.lunch?.sides) ? s.lunch.sides : [],       drinks: Array.isArray(s?.lunch?.drinks) ? s.lunch.drinks : [], },
-          dinner:    { dishId: s?.dinner?.dishId ?? null, sides: Array.isArray(s?.dinner?.sides) ? s.dinner.sides : [],   drinks: Array.isArray(s?.dinner?.drinks) ? s.dinner.drinks : [], },
+          lunch:     { dishId: s?.lunch?.dishId ?? null,     sides: Array.isArray(s?.lunch?.sides) ? s.lunch.sides : [],       drinks: Array.isArray(s?.lunch?.drinks) ? s.lunch.drinks : [], },
+          dinner:    { dishId: s?.dinner?.dishId ?? null,    sides: Array.isArray(s?.dinner?.sides) ? s.dinner.sides : [],   drinks: Array.isArray(s?.dinner?.drinks) ? s.dinner.drinks : [], },
         }));
       }
-      if (data.mealPref && PREF_SLOTS[data.mealPref]) state.mealPref = data.mealPref;
+      if (typeof data.mealPref === 'string') applyLegacyMealPref(data.mealPref);
       const startDateEl = document.getElementById("startDate");
       if (startDateEl && data.startDate) startDateEl.value = data.startDate;
       localStorage.removeItem(LEGACY_WEEKLY_KEY);
@@ -655,9 +629,9 @@
   function loadFromStorage() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) { migrateFromLegacyWeekly(); return; }
+      if (!raw) { migrateFromLegacyWeekly(); reflectMealPrefUI(); return; }
       const data = JSON.parse(raw);
-      if (data.mealPref && PREF_SLOTS[data.mealPref]) state.mealPref = data.mealPref;
+      if (Array.isArray(data.mealPrefs)) state.mealPrefs = new Set(data.mealPrefs);
       if (
         Array.isArray(data.monthlySelections) &&
         data.monthlySelections.length === state.monthlySelections.length &&
@@ -668,8 +642,7 @@
       if (Number.isInteger(data.currentWeekIndex)) state.currentWeekIndex = Math.max(0, Math.min(3, data.currentWeekIndex));
       const startDateEl = document.getElementById("startDate");
       if (startDateEl && data.startDate) startDateEl.value = data.startDate;
-      const mealRadio = document.querySelector(`input[name="meal_preference"][value="${state.mealPref}"]`);
-      if (mealRadio) mealRadio.checked = true;
+      reflectMealPrefUI();
     } catch (e) { console.warn("Load failed:", e); }
   }
 
@@ -678,8 +651,8 @@
   const newWeek = () => DAYS.map(() => emptyDay());
 
   const state = {
-    mealPref: "lunch",
-    monthlySelections: [newWeek(), newWeek(), newWeek(), newWeek()], // 4 weeks support
+    mealPrefs: new Set(["lunch"]),         // multi-select prefs: breakfast/lunch/dinner
+    monthlySelections: [newWeek(), newWeek(), newWeek(), newWeek()], // 4 weeks
     currentWeekIndex: 0,
     activeDayIndex: null,
     activeMealSlot: "lunch",
@@ -721,8 +694,33 @@
     }).filter(Boolean);
   }
 
-  function currentSelections() {
-    return state.monthlySelections[state.currentWeekIndex];
+  function currentSelections() { return state.monthlySelections[state.currentWeekIndex]; }
+
+  function getSelectedSlots() {
+    // Ensure at least one slot; default to lunch if none selected
+    const slots = Array.from(state.mealPrefs);
+    return slots.length ? slots : ["lunch"];
+  }
+
+  function reflectMealPrefUI() {
+    document.getElementById('pref_breakfast').checked = state.mealPrefs.has('breakfast');
+    document.getElementById('pref_lunch').checked = state.mealPrefs.has('lunch');
+    document.getElementById('pref_dinner').checked = state.mealPrefs.has('dinner');
+  }
+
+  // Support migrating old single-value mealPref strings
+  function applyLegacyMealPref(val){
+    const map = {
+      breakfast: ["breakfast"],
+      lunch: ["lunch"],
+      dinner: ["dinner"],
+      breakfast_lunch: ["breakfast","lunch"],
+      breakfast_dinner: ["breakfast","dinner"],
+      lunch_dinner: ["lunch","dinner"],
+      all: ["breakfast","lunch","dinner"],
+      tiffin: ["lunch"],
+    };
+    if (map[val]) state.mealPrefs = new Set(map[val]);
   }
 
   function deepCloneWeek(week) {
@@ -736,7 +734,7 @@
   // ========= Render: Days (dynamic slots) =========
   function renderDays() {
     daysContainer.innerHTML = "";
-    const slots = PREF_SLOTS[state.mealPref] || ["lunch"];
+    const slots = getSelectedSlots();
     const colsClass = slots.length === 3 ? "lg:grid-cols-3 md:grid-cols-2 grid-cols-1" : (slots.length === 2 ? "md:grid-cols-2 grid-cols-1" : "grid-cols-1");
 
     const activeContainer = currentSelections();
@@ -770,7 +768,7 @@
       row.innerHTML = `
         <div class="flex items-start gap-2 md:gap-4">
           <div class="w-28 shrink-0 pt-3 text-base-content font-medium">${DAYS[i]}</div>
-          <div class="flex-1 grid ${colsClass} gap-3">${(PREF_SLOTS[state.mealPref]||["lunch"]).map((slot) => cardHTML(i, slot)).join("")}</div>
+          <div class="flex-1 grid ${colsClass} gap-3">${slots.map((slot) => cardHTML(i, slot)).join("")}</div>
         </div>
       `;
       row.querySelectorAll("button[data-day]").forEach((btn) => {
@@ -795,8 +793,7 @@
 
   function renderSummary() {
     summaryList.innerHTML = "";
-    let weekDetailTotal = 0;
-    const slots = PREF_SLOTS[state.mealPref] || ["lunch"];
+    const slots = getSelectedSlots();
 
     // Current week detail
     const activeContainer = currentSelections();
@@ -807,7 +804,6 @@
         const dish = dishById(s.dishId);
         const names = addonNames([...(s.sides||[]), ...(s.drinks||[])]).join(", ");
         const cost = calcCost(s);
-        weekDetailTotal += cost;
         const li = document.createElement("li");
         li.className = "flex items-center gap-2";
         li.innerHTML = `
@@ -929,9 +925,10 @@
   }
 
   // ========= Bindings =========
-  document.querySelectorAll('input[name="meal_preference"]').forEach((r) => {
-    r.addEventListener("change", (e) => {
-      state.mealPref = e.target.value;
+  ['pref_breakfast','pref_lunch','pref_dinner'].forEach(id => {
+    document.getElementById(id).addEventListener('change', (e) => {
+      const val = e.target.value;
+      if (e.target.checked) state.mealPrefs.add(val); else state.mealPrefs.delete(val);
       renderDays();
       renderSummary();
     });
@@ -955,14 +952,14 @@
   copyWeek1Btn?.addEventListener('click', () => {
     const w1 = deepCloneWeek(state.monthlySelections[0]);
     for (let i = 1; i < 4; i++) state.monthlySelections[i] = deepCloneWeek(w1);
-    // Keep current week index as-is; re-render
     renderDays();
     renderSummary();
     saveToStorage();
   });
 
   // ========= Init =========
-  document.querySelector('input[name="meal_preference"][value="lunch"]').checked = true;
+  // default check Lunch
+  document.getElementById('pref_lunch').checked = true;
   loadFromStorage();
   renderWeekTabs();
   renderDays();
@@ -971,11 +968,11 @@
   // Reset plan (clears all and reverts to defaults)
   function resetPlan() {
     localStorage.removeItem(STORAGE_KEY);
-    state.mealPref = "lunch";
+    state.mealPrefs = new Set(["lunch"]);
     state.monthlySelections = [newWeek(),newWeek(),newWeek(),newWeek()];
     state.currentWeekIndex = 0;
     const startDateEl = document.getElementById("startDate"); if (startDateEl) startDateEl.value = "";
-    document.querySelector('input[name="meal_preference"][value="lunch"]').checked = true;
+    reflectMealPrefUI();
     renderWeekTabs();
     renderDays();
     renderSummary();
@@ -985,6 +982,7 @@
     if (confirm("Are you sure you want to reset your plan?")) resetPlan();
   });
 </script>
+
 
 
     <!-- sidebar -->
