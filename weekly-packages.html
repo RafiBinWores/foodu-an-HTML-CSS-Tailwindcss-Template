@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Food Delivery Website | Frontend</title>
+
+    <!-- Tailwind css -->
+    <link href="./src/output.css" rel="stylesheet" />
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="./assets/css/all.css" />
+
+    <!-- Custom Css -->
+    <link rel="stylesheet" href="./assets/css/style.css" />
+
+    <!-- Google font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Oswald:wght@200..700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Swiper js -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <!-- Animate js -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+  </head>
+
+  <body>
+    <!-- Header -->
+    <header>
+      <nav
+        id="siteNav"
+        class="sticky top-0 z-40 h-20 px-4 sm:px-6 lg:h-24 lg:px-12 max-w-7xl mx-auto flex items-center justify-between"
+      >
+        <!-- Hamburger (sm & md) -->
+        <button
+          id="menuToggle"
+          aria-label="Toggle menu"
+          class="lg:hidden inline-flex items-center gap-2 p-2 rounded-lg"
+        >
+          <i class="fa-regular fa-bars text-2xl"></i>
+        </button>
+
+        <!-- Logo (centered on sm & md) -->
+        <a
+          href="index.html"
+          class="absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0"
+        >
+          <img
+            src="./assets/images/logos/logo.png"
+            alt="Logo"
+            class="h-10 md:h-12"
+          />
+        </a>
+
+        <!-- Desktop Menu -->
+        <ul
+          class="hidden lg:flex items-center gap-10 font-oswald text-lg font-medium text-slate-900"
+        >
+          <li><a href="#" class="hover:opacity-80">Home</a></li>
+          <li class="relative group">
+            <a href="#" class="hover:opacity-80 flex items-center gap-1">
+              Categories
+              <svg
+                class="w-4 h-4 transition-transform group-hover:rotate-180"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </a>
+
+            <!-- Dropdown -->
+            <ul
+              class="absolute left-0 mt-2 w-48 bg-white rounded-xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition duration-200 z-50"
+            >
+              <li>
+                <a
+                  href="/categories/pizza"
+                  class="block px-4 py-2 hover:bg-gray-100 rounded-t-xl"
+                  >Pizza</a
+                >
+              </li>
+              <li>
+                <a
+                  href="/categories/burger"
+                  class="block px-4 py-2 hover:bg-gray-100"
+                  >Burger</a
+                >
+              </li>
+              <li>
+                <a
+                  href="/categories/crab"
+                  class="block px-4 py-2 hover:bg-gray-100 rounded-b-xl"
+                  >Seafood</a
+                >
+              </li>
+            </ul>
+          </li>
+
+          <li><a href="shop.html" class="hover:opacity-80">Shop</a></li>
+          <li><a href="#" class="hover:opacity-80">Contact</a></li>
+          <li><a href="#" class="hover:opacity-80">About</a></li>
+        </ul>
+
+        <div class="flex items-center gap-3 ml-auto lg:ml-0">
+          <div class="drawer drawer-end z-[60]" x-data="cartDrawer()" x-cloak>
+            <!-- Toggle -->
+            <input id="cart-drawer" type="checkbox" class="drawer-toggle" />
+
+            <!-- Cart button -->
+            <div class="drawer-content">
+              <label
+                for="cart-drawer"
+                class="relative inline-grid place-items-center size-10 sm:size-12 rounded-full bg-slate-900 cursor-pointer"
+              >
+                <i
+                  class="fa-solid fa-cart-shopping text-white text-lg sm:text-xl"
+                ></i>
+                <span
+                  class="absolute -top-1 -right-1 grid place-items-center rounded-full bg-red-600 text-white text-[10px] sm:text-xs font-bold w-4 h-4 sm:w-5 sm:h-5"
+                >
+                  <span x-text="badgeCount"></span>
+                </span>
+              </label>
+            </div>
+
+            <!-- Drawer panel -->
+            <div class="drawer-side">
+              <!-- overlay closes drawer -->
+              <label
+                for="cart-drawer"
+                class="drawer-overlay"
+                aria-label="Close cart"
+              ></label>
+
+              <div
+                class="bg-base-100 text-base-content min-h-full w-full sm:w-96 shadow-2xl flex flex-col"
+              >
+                <!-- Header -->
+                <div
+                  class="flex items-center justify-between px-5 py-4 border-b"
+                >
+                  <h2 class="font-oswald text-xl">Your Cart</h2>
+                  <label
+                    for="cart-drawer"
+                    class="p-2 rounded hover:bg-slate-100 cursor-pointer"
+                    aria-label="Close cart"
+                  >
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                  </label>
+                </div>
+
+                <!-- Items -->
+                <div class="flex-1 overflow-y-auto divide-y">
+                  <template x-for="(item, i) in cart" :key="i">
+                    <div class="flex gap-3 p-4">
+                      <img
+                        :src="item.image"
+                        alt=""
+                        class="w-16 h-16 object-cover rounded"
+                      />
+                      <div class="flex-1">
+                        <p class="font-medium" x-text="item.name"></p>
+                        <p
+                          class="text-sm text-slate-500"
+                          x-text="item.desc"
+                        ></p>
+                        <div class="mt-2 flex items-center justify-between">
+                          <div class="inline-flex items-center border rounded">
+                            <button
+                              type="button"
+                              @click="decrement(i)"
+                              class="px-2 py-1 hover:bg-slate-100"
+                            >
+                              -
+                            </button>
+                            <span class="px-3" x-text="item.qty"></span>
+                            <button
+                              type="button"
+                              @click="increment(i)"
+                              class="px-2 py-1 hover:bg-slate-100"
+                            >
+                              +
+                            </button>
+                          </div>
+                          <span class="font-medium"
+                            >৳<span x-text="item.qty * item.price"></span
+                          ></span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        @click="remove(i)"
+                        class="self-start p-2 rounded hover:bg-slate-100"
+                        aria-label="Remove item"
+                      >
+                        <i class="fa-regular fa-trash-can"></i>
+                      </button>
+                    </div>
+                  </template>
+
+                  <!-- Empty state -->
+                  <div
+                    x-show="cart.length === 0"
+                    class="p-6 text-center text-slate-500"
+                  >
+                    Your cart is empty.
+                  </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="border-t p-5 space-y-4">
+                  <div class="flex items-center justify-between text-base">
+                    <span class="text-slate-600">Subtotal</span>
+                    <span class="font-semibold"
+                      >৳<span x-text="subtotal()"></span
+                    ></span>
+                  </div>
+                  <div class="flex gap-3">
+                    <a
+                      href="/cart"
+                      class="flex-1 inline-flex items-center justify-center h-11 rounded-md border border-slate-300 hover:bg-slate-50"
+                    >
+                      View Cart
+                    </a>
+                    <a
+                      href="/checkout"
+                      class="flex-1 inline-flex items-center justify-center h-11 rounded-md bg-[#e80f3a] text-white hover:opacity-95"
+                    >
+                      Checkout
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Account icon -->
+          <a
+            href="#"
+            class="grid border rounded-full border-slate-900 w-10 h-10 sm:w-12 sm:h-12 place-items-center hover:bg-slate-900 group duration-200 flex-none"
+          >
+            <i class="fa-regular fa-user group-hover:text-white"></i>
+          </a>
+        </div>
+      </nav>
+
+      <!-- Sidebar Menu (sm & md) -->
+      <div
+        id="mobileMenu"
+        class="fixed top-0 left-0 w-64 h-screen bg-white shadow-lg transform -translate-x-full transition-transform duration-300 lg:hidden z-50"
+        x-data="{ catOpen: false }"
+      >
+        <!-- Header -->
+        <div
+          class="p-5 flex justify-between items-center border-b border-slate-200"
+        >
+          <span class="font-bold text-lg">Menu</span>
+          <button id="menuClose" class="text-2xl font-bold">&times;</button>
+        </div>
+
+        <!-- Menu Items -->
+        <ul
+          class="flex flex-col font-oswald text-lg font-medium text-slate-900 mt-4"
+        >
+          <li>
+            <a href="#" class="block px-5 py-4 hover:bg-slate-100">Home</a>
+          </li>
+
+          <!-- Dropdown -->
+          <li>
+            <button
+              @click="catOpen = !catOpen"
+              class="w-full flex justify-between items-center hover:bg-slate-100"
+            >
+              <span class="px-5 py-4">Categories</span>
+              <svg
+                class="w-4 h-4 transition-transform me-4"
+                :class="catOpen ? 'rotate-180' : ''"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+
+            <!-- Inline Dropdown -->
+            <ul
+              x-show="catOpen"
+              x-transition
+              class="pl-8 pr-4 bg-slate-50 text-base text-slate-800"
+            >
+              <li>
+                <a
+                  href="/categories/pizza"
+                  class="block py-2 hover:text-rose-600"
+                  >Pizza</a
+                >
+              </li>
+              <li>
+                <a
+                  href="/categories/burger"
+                  class="block py-2 hover:text-rose-600"
+                  >Burger</a
+                >
+              </li>
+              <li>
+                <a
+                  href="/categories/seafood"
+                  class="block py-2 hover:text-rose-600"
+                  >Seafood</a
+                >
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <a href="#" class="block px-5 py-4 hover:bg-slate-100">Shop</a>
+          </li>
+          <li>
+            <a href="#" class="block px-5 py-4 hover:bg-slate-100">Contact</a>
+          </li>
+          <li>
+            <a href="#" class="block px-5 py-4 hover:bg-slate-100">About</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Overlay (for sidebar) -->
+      <div
+        id="menuOverlay"
+        class="hidden fixed inset-0 bg-black/40 z-30 lg:hidden"
+      ></div>
+    </header>
+    <!-- Header end -->
+
+    <!-- Breadcrumb -->
+    <div
+      class="bg-[url(/assets/images/breadcrumb-bg.jpg)] py-20 md:py-32 bg-no-repeat bg-cover bg-center text-center text-white grid place-items-center font-oswald"
+    >
+      <h4 class="text-4xl md:text-6xl font-medium">Packages</h4>
+      <div class="breadcrumbs text-sm mt-3 font-oswald font-medium">
+        <ul>
+          <li>
+            <a>
+              <i class="fa-regular fa-house"></i>
+              Home
+            </a>
+          </li>
+          <li>Packages</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Container -->
+    <!-- Container -->
+    <div class="max-w-7xl px-4 mx-auto py-10 lg:py-16">
+      <div
+        class="flex md:items-center justify-between flex-col md:flex-row gap-4"
+      >
+        <div>
+          <h1
+            class="text-slate-900 font-oswald text-3xl md:text-4xl lg:text-5xl font-medium capitalize mb-1"
+          >
+            Weekly Plan
+          </h1>
+          <p class="font-jost text-gray-600 text-lg">
+            Customize meals for the next 7 days.
+          </p>
+        </div>
+        <div class="flex items-center gap-3">
+          <label class="text-neutral-700 font-jost text-lg">Start Date:</label>
+          <input
+            id="startDate"
+            type="date"
+            class="px-3 py-2 rounded-xl border border-customRed-100/60 focus:outline-none focus:ring-2 focus:ring-customRed-100"
+          />
+        </div>
+      </div>
+
+      <!-- Meal Preference (Required) -->
+      <div
+        class="bg-customRed-100/10 mt-6 px-4 pt-4 pb-8 md:pt-4 md:pb-8 rounded-xl"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <h4
+            class="font-oswald font-medium text-lg text-slate-900 flex items-center gap-2"
+          >
+            Meal Preference
+            <span class="text-customRed-100">*</span>
+          </h4>
+          <span
+            class="bg-customRed-100 text-white font-jost px-2 py-1 rounded-full text-xs"
+            >Required</span
+          >
+        </div>
+
+        <p class="font-jost text-sm text-gray-600 mb-4">
+          Choose which meals are included in this weekly plan.
+        </p>
+
+        <div
+          class="font-jost text-gray-700 gap-3 md:gap-4 flex flex-wrap"
+          id="mealPrefGroup"
+        >
+          <!-- One-meal options -->
+          <label
+            class="border border-gray-400 rounded-lg px-4 py-3 hover:bg-white/60 transition cursor-pointer flex items-center gap-2"
+          >
+            <input
+              type="radio"
+              name="meal_preference"
+              value="breakfast"
+              class="radio radio-primary radio-sm"
+              required
+            />
+            <span class="text-base">Breakfast</span>
+          </label>
+          <label
+            class="border border-gray-400 rounded-lg px-4 py-3 hover:bg-white/60 transition cursor-pointer flex items-center gap-2"
+          >
+            <input
+              type="radio"
+              name="meal_preference"
+              value="lunch"
+              class="radio radio-primary radio-sm"
+              required
+            />
+            <span class="text-base">Lunch</span>
+          </label>
+          <label
+            class="border border-gray-400 rounded-lg px-4 py-3 hover:bg-white/60 transition cursor-pointer flex items-center gap-2"
+          >
+            <input
+              type="radio"
+              name="meal_preference"
+              value="dinner"
+              class="radio radio-primary radio-sm"
+              required
+            />
+            <span class="text-base">Dinner</span>
+          </label>
+
+          <!-- Two-meal combos -->
+          <label
+            class="border border-gray-400 rounded-lg px-4 py-3 hover:bg-white/60 transition cursor-pointer flex items-center gap-2"
+          >
+            <input
+              type="radio"
+              name="meal_preference"
+              value="breakfast_lunch"
+              class="radio radio-primary radio-sm"
+              required
+            />
+            <span class="text-base">Breakfast &amp; Lunch</span>
+          </label>
+          <label
+            class="border border-gray-400 rounded-lg px-4 py-3 hover:bg-white/60 transition cursor-pointer flex items-center gap-2"
+          >
+            <input
+              type="radio"
+              name="meal_preference"
+              value="breakfast_dinner"
+              class="radio radio-primary radio-sm"
+              required
+            />
+            <span class="text-base">Breakfast &amp; Dinner</span>
+          </label>
+          <label
+            class="border border-gray-400 rounded-lg px-4 py-3 hover:bg-white/60 transition cursor-pointer flex items-center gap-2"
+          >
+            <input
+              type="radio"
+              name="meal_preference"
+              value="lunch_dinner"
+              class="radio radio-primary radio-sm"
+              required
+            />
+            <span class="text-base">Lunch &amp; Dinner</span>
+          </label>
+
+          <!-- Three-meal combo -->
+          <label
+            class="border border-gray-400 rounded-lg px-4 py-3 hover:bg-white/60 transition cursor-pointer flex items-center gap-2"
+          >
+            <input
+              type="radio"
+              name="meal_preference"
+              value="all"
+              class="radio radio-primary radio-sm"
+              required
+            />
+            <span class="text-base">Breakfast, Lunch &amp; Dinner</span>
+          </label>
+
+          <!-- Special -->
+          <label
+            class="border border-gray-400 rounded-lg px-4 py-3 hover:bg-white/60 transition cursor-pointer flex items-center gap-2"
+          >
+            <input
+              type="radio"
+              name="meal_preference"
+              value="tiffin"
+              class="radio radio-primary radio-sm"
+              required
+            />
+            <span class="text-base">Student Tiffin</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Selected Meals Summary -->
+      <div class="grid grid-cols-12 gap-6 mt-6">
+        <!-- Left -->
+        <div class="col-span-12 lg:col-span-8">
+          <div class="rounded-2xl overflow-hidden bg-customRed-100/10 shadow">
+            <div class="flex items-center justify-between px-5 py-4">
+              <p class="font-oswald text-lg">Select your meals</p>
+            </div>
+            <div id="daysContainer" class="divide-y divide-base-200">
+              <!-- Rows injected by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Summary -->
+        <aside class="col-span-12 lg:col-span-4">
+          <div class="rounded-2xl p-6 bg-customRed-100/10 shadow">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm text-base-content/70">Plan</p>
+                <h3 class="font-oswald text-xl">Weekly Plan</h3>
+              </div>
+              <div class="text-right">
+                <p class="text-sm text-base-content/70">Price</p>
+                <p id="pricePerWeek" class="font-semibold">৳0 / week</p>
+              </div>
+            </div>
+
+            <div class="divider my-4"></div>
+
+            <div>
+              <p class="text-sm text-base-content/70 mb-2">Selected meals</p>
+              <ul id="summaryList" class="text-sm space-y-2 pb-2">
+                <!-- Filled by JS -->
+              </ul>
+            </div>
+
+            <div class="divider my-4"></div>
+
+            <div class="flex items-center justify-between">
+              <p class="font-semibold text-lg">Total</p>
+              <p id="totalAmount" class="font-bold text-lg">৳0</p>
+            </div>
+
+            <button
+              type="submit"
+              class="relative mt-4 w-full rounded-md px-8 md:px-10 py-3 overflow-hidden cursor-pointer bg-customRed-100 font-oswald text-white group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white/60"
+            >
+              <!-- overlay expands + rotates -->
+              <span
+                class="absolute inset-0 bg-slate-900 transform origin-center scale-0 rotate-45 transition-transform duration-500 ease-out group-hover:scale-1150"
+              ></span>
+
+              <span
+                class="relative z-10 transition-colors duration-300 group-hover:text-white"
+              >
+                CONFIRM BOOKING
+              </span>
+            </button>
+
+            <button
+              type="submit" id="resetPlanBtn"
+              class="relative mt-3 w-full rounded-md px-8 md:px-10 py-3 overflow-hidden cursor-pointer bg-slate-900 font-oswald text-white group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white/60"
+            >
+              <!-- overlay expands + rotates -->
+              <span
+                class="absolute inset-0 bg-white transform origin-center scale-0 rotate-45 transition-transform duration-500 ease-out group-hover:scale-1150"
+              ></span>
+
+              <span
+                class="relative z-10 transition-colors duration-300 group-hover:text-black"
+              >
+                RESET PLAN
+              </span>
+            </button>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <!-- DaisyUI Modal (dialog) -->
+    <dialog id="mealModal" class="modal">
+      <div class="modal-box max-w-3xl">
+        <div class="flex items-center justify-between mb-4">
+          <h3 id="modalTitle" class="font-oswald text-xl">Choose your dish</h3>
+          <form method="dialog">
+            <button class="btn btn-sm btn-circle">✕</button>
+          </form>
+        </div>
+
+        <!-- Step 1: Dishes -->
+        <div id="stepDish">
+          <div
+            id="dishCards"
+            class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4"
+          ></div>
+          <!-- add by js -->
+        </div>
+
+        <!-- Step 2: Add-ons (optional) -->
+        <div id="stepAddons" class="hidden">
+          <p class="mb-3 text-base-content/80">
+            Add optional <b>Sides</b> & <b>Drinks</b>
+          </p>
+
+          <div class="grid sm:grid-cols-2 gap-6">
+            <!-- Sides -->
+            <div>
+              <p class="font-medium mb-2">Sides</p>
+              <div id="sidesList" class="space-y-2"></div>
+            </div>
+            <!-- Drinks -->
+            <div>
+              <p class="font-medium mb-2">Drinks</p>
+              <div id="drinksList" class="space-y-2"></div>
+            </div>
+          </div>
+
+          <div class="mt-6 flex items-center justify-between">
+            <form method="dialog">
+              <button id="skipAddons" class="btn btn-ghost">Skip</button>
+            </form>
+            <button id="saveAddons" class="btn btn-primary">Save</button>
+          </div>
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button>Close</button>
+      </form>
+    </dialog>
+
+    <script>
+      // ========= Static Data with Online IMAGES =========
+      const DAYS = [
+        "SATURDAY",
+        "SUNDAY",
+        "MONDAY",
+        "TUESDAY",
+        "WEDNESDAY",
+        "THURSDAY",
+        "FRIDAY",
+      ];
+
+      const DISHES = [
+        {
+          id: "chicken_bowl",
+          name: "Chicken Bowl",
+          desc: "Grilled chicken, rice, veggies",
+          price: 220,
+          img: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&q=80&auto=format&fit=crop",
+        },
+        {
+          id: "beef_curry",
+          name: "Beef Curry",
+          desc: "Slow cooked, medium spicy",
+          price: 260,
+          img: "https://images.unsplash.com/photo-1604908176997-43165283d680?w=800&q=80&auto=format&fit=crop",
+        },
+        {
+          id: "veg_mixed",
+          name: "Veg Mixed",
+          desc: "Mixed veggies & lentils",
+          price: 180,
+          img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&q=80&auto=format&fit=crop",
+        },
+        {
+          id: "pasta_alfredo",
+          name: "Pasta Alfredo",
+          desc: "Creamy alfredo sauce",
+          price: 240,
+          img: "https://images.unsplash.com/photo-1521389508051-d7ffb5dc8bbf?w=800&q=80&auto=format&fit=crop",
+        },
+        {
+          id: "fish_grill",
+          name: "Grilled Fish",
+          desc: "Lemon butter, salad",
+          price: 280,
+          img: "https://images.unsplash.com/photo-1553621042-f6e147245754?w=800&q=80&auto=format&fit=crop",
+        },
+        {
+          id: "khichuri_egg",
+          name: "Khichuri & Egg",
+          desc: "Comfort combo",
+          price: 160,
+          img: "https://images.unsplash.com/photo-1526318472351-c75fcf070305?w=800&q=80&auto=format&fit=crop",
+        },
+      ];
+
+      const SIDES = [
+        { id: "salad", name: "Green Salad", price: 60 },
+        { id: "fries", name: "Fries", price: 90 },
+        { id: "bread", name: "Garlic Bread", price: 70 },
+      ];
+
+      const DRINKS = [
+        { id: "water", name: "Mineral Water", price: 20 },
+        { id: "soda", name: "Soft Drink", price: 40 },
+        { id: "juice", name: "Fresh Juice", price: 120 },
+      ];
+
+      // ========= Meal Preference → Slots mapping =========
+      const PREF_SLOTS = {
+        breakfast: ["breakfast"],
+        lunch: ["lunch"],
+        dinner: ["dinner"],
+        breakfast_lunch: ["breakfast", "lunch"],
+        breakfast_dinner: ["breakfast", "dinner"],
+        lunch_dinner: ["lunch", "dinner"],
+        all: ["breakfast", "lunch", "dinner"],
+        tiffin: ["lunch"], // map Student Tiffin to Lunch slot
+      };
+
+      // ========= Storage helpers =========
+      const STORAGE_KEY = "weekly_plan_state_v1";
+
+      function saveToStorage() {
+        try {
+          const startDateEl = document.getElementById("startDate");
+          localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify({
+              mealPref: state.mealPref,
+              selections: state.selections,
+              startDate: startDateEl ? startDateEl.value : null,
+            })
+          );
+        } catch (e) {
+          console.warn("Save failed:", e);
+        }
+      }
+
+      function loadFromStorage() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return;
+          const data = JSON.parse(raw);
+
+          if (data.mealPref && PREF_SLOTS[data.mealPref]) {
+            state.mealPref = data.mealPref;
+          }
+          if (
+            Array.isArray(data.selections) &&
+            data.selections.length === DAYS.length
+          ) {
+            state.selections = data.selections.map((s) => ({
+              breakfast: {
+                dishId: s?.breakfast?.dishId ?? null,
+                sides: Array.isArray(s?.breakfast?.sides)
+                  ? s.breakfast.sides
+                  : [],
+                drinks: Array.isArray(s?.breakfast?.drinks)
+                  ? s.breakfast.drinks
+                  : [],
+              },
+              lunch: {
+                dishId: s?.lunch?.dishId ?? null,
+                sides: Array.isArray(s?.lunch?.sides) ? s.lunch.sides : [],
+                drinks: Array.isArray(s?.lunch?.drinks) ? s.lunch.drinks : [],
+              },
+              dinner: {
+                dishId: s?.dinner?.dishId ?? null,
+                sides: Array.isArray(s?.dinner?.sides) ? s.dinner.sides : [],
+                drinks: Array.isArray(s?.dinner?.drinks) ? s.dinner.drinks : [],
+              },
+            }));
+          }
+
+          const startDateEl = document.getElementById("startDate");
+          if (startDateEl && data.startDate) startDateEl.value = data.startDate;
+
+          // reflect radio UI
+          const radio = document.querySelector(
+            `input[name="meal_preference"][value="${state.mealPref}"]`
+          );
+          if (radio) radio.checked = true;
+        } catch (e) {
+          console.warn("Load failed:", e);
+        }
+      }
+
+      // ========= State =========
+      const state = {
+        mealPref: "lunch",
+        selections: DAYS.map(() => ({
+          breakfast: { dishId: null, sides: [], drinks: [] },
+          lunch: { dishId: null, sides: [], drinks: [] },
+          dinner: { dishId: null, sides: [], drinks: [] },
+        })),
+        activeDayIndex: null,
+        activeMealSlot: "lunch",
+        temp: { dishId: null, sides: new Set(), drinks: new Set() },
+      };
+
+      // ========= DOM Refs =========
+      const daysContainer = document.getElementById("daysContainer");
+      const summaryList = document.getElementById("summaryList");
+      const totalAmount = document.getElementById("totalAmount");
+      const pricePerWeek = document.getElementById("pricePerWeek");
+
+      const dlg = document.getElementById("mealModal");
+      const stepDish = document.getElementById("stepDish");
+      const stepAddons = document.getElementById("stepAddons");
+      const dishCards = document.getElementById("dishCards");
+      const sidesList = document.getElementById("sidesList");
+      const drinksList = document.getElementById("drinksList");
+
+      // ========= Helpers =========
+      const PLACEHOLDER_IMG =
+        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='360'%3E%3Crect width='100%25' height='100%25' fill='%23e5e7eb'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%239ca3af' font-family='Arial' font-size='20'%3ENo image%3C/text%3E%3C/svg%3E";
+
+      const slotLabel = (slot) =>
+        slot === "breakfast"
+          ? "Breakfast"
+          : slot === "lunch"
+          ? "Lunch"
+          : "Dinner";
+      const selectionFor = (dayIdx, slot) => state.selections[dayIdx][slot];
+      const dishById = (id) => DISHES.find((d) => d.id === id);
+      function addonNames(ids) {
+        return ids
+          .map((id) => {
+            const s = SIDES.find((x) => x.id === id);
+            if (s) return s.name;
+            const d = DRINKS.find((x) => x.id === id);
+            if (d) return d.name;
+            return null;
+          })
+          .filter(Boolean);
+      }
+
+      // ========= Render: Days (dynamic slots) =========
+      function renderDays() {
+        daysContainer.innerHTML = "";
+        const slots = PREF_SLOTS[state.mealPref] || ["lunch"];
+        const colsClass =
+          slots.length === 3
+            ? "lg:grid-cols-3 md:grid-cols-2 grid-cols-1"
+            : slots.length === 2
+            ? "md:grid-cols-2 grid-cols-1"
+            : "grid-cols-1";
+
+        const cardHTML = (dayIdx, slot) => {
+          const sel = selectionFor(dayIdx, slot);
+          const dish = dishById(sel.dishId);
+          const names = addonNames([...sel.sides, ...sel.drinks]).join(", ");
+          const img = dish?.img || PLACEHOLDER_IMG;
+
+          return `
+        <button data-day="${dayIdx}" data-slot="${slot}"
+          class="w-full text-left border border-customRed-100/60 rounded-lg px-4 py-3 transition hover:bg-customRed-100/10 focus:ring-2 focus:ring-customRed-100">
+          <div class="flex items-start gap-3">
+            <img src="${img}" alt="${dish?.name || "Dish"}" loading="lazy"
+                 class="w-14 h-14 rounded-md object-cover border border-white/60 shadow-sm">
+            <div class="min-w-0">
+              <div class="flex items-center justify-between gap-3">
+                <span class="text-sm font-medium text-slate-700">${slotLabel(
+                  slot
+                )}</span>
+                <span class="text-xs text-slate-500">${
+                  dish ? "Change" : "Select"
+                }</span>
+              </div>
+              <div class="mt-0.5 text-sm truncate">${
+                dish ? dish.name : "Select a dish..."
+              }</div>
+              <div class="text-xs text-slate-500 truncate">${
+                names || "Add-ons (optional)"
+              }</div>
+            </div>
+          </div>
+        </button>
+      `;
+        };
+
+        state.selections.forEach((_, i) => {
+          const row = document.createElement("div");
+          row.className = "px-5 py-4";
+
+          row.innerHTML = `
+        <div class="flex items-start gap-2 md:gap-4">
+          <div class="w-28 shrink-0 pt-3 text-base-content font-medium">${
+            DAYS[i]
+          }</div>
+          <div class="flex-1 grid ${colsClass} gap-3">
+            ${slots.map((slot) => cardHTML(i, slot)).join("")}
+          </div>
+        </div>
+      `;
+
+          row.querySelectorAll("button[data-day]").forEach((btn) => {
+            btn.addEventListener("click", () => {
+              const day = Number(btn.getAttribute("data-day"));
+              const slot = btn.getAttribute("data-slot");
+              openDishStep(day, slot);
+            });
+          });
+
+          daysContainer.appendChild(row);
+        });
+      }
+
+      // ========= Render: Summary (only active slots) =========
+      function renderSummary() {
+        summaryList.innerHTML = "";
+        let total = 0;
+        const slots = PREF_SLOTS[state.mealPref] || ["lunch"];
+
+        state.selections.forEach((sel, i) => {
+          slots.forEach((slot) => {
+            const s = sel[slot];
+            if (!s.dishId) return;
+
+            const dish = dishById(s.dishId);
+            const sidesCost = s.sides.reduce(
+              (sum, id) => sum + (SIDES.find((x) => x.id === id)?.price || 0),
+              0
+            );
+            const drinksCost = s.drinks.reduce(
+              (sum, id) => sum + (DRINKS.find((x) => x.id === id)?.price || 0),
+              0
+            );
+            const cost = (dish?.price || 0) + sidesCost + drinksCost;
+            total += cost;
+
+            const names = addonNames([...s.sides, ...s.drinks]).join(", ");
+
+            const li = document.createElement("li");
+            li.className = "flex items-center gap-2";
+            li.innerHTML = `
+          <span class="text-base-content/80">${DAYS[i]} (${slotLabel(
+              slot
+            )})</span> —
+          <span class="font-medium">${dish?.name || ""}</span>
+          <span class="text-base-content/60">${
+            names ? " | " + names : ""
+          }</span>
+          <span class="ml-auto">৳${cost}</span>
+        `;
+            summaryList.appendChild(li);
+          });
+        });
+
+        totalAmount.textContent = `৳${total}`;
+        pricePerWeek.textContent = `৳${total} / week`;
+
+        // persist on each summary render
+        saveToStorage();
+      }
+
+      // ========= Modal: Dish Cards (smaller on mobile) =========
+      function renderDishCards() {
+        dishCards.innerHTML = "";
+        DISHES.forEach((d) => {
+          const card = document.createElement("button");
+          card.className =
+            "card card-bordered bg-base-100 hover:shadow transition text-left overflow-hidden";
+          card.innerHTML = `
+        <figure class="aspect-[1/1] sm:aspect-[4/3] overflow-hidden">
+          <img src="${d.img || PLACEHOLDER_IMG}" alt="${
+            d.name
+          }" loading="lazy" class="w-full h-full object-cover">
+        </figure>
+        <div class="card-body p-2 sm:p-4">
+          <div class="flex items-start justify-between w-full">
+            <div class="min-w-0">
+              <h4 class="card-title text-sm sm:text-base leading-tight">${
+                d.name
+              }</h4>
+              <p class="text-xs sm:text-sm text-base-content/70 truncate">${
+                d.desc
+              }</p>
+            </div>
+            <span class="badge badge-outline shrink-0 text-xs sm:text-sm">৳${
+              d.price
+            }</span>
+          </div>
+        </div>
+      `;
+          card.addEventListener("click", () => {
+            state.temp.dishId = d.id;
+            goToAddonsStep();
+          });
+          dishCards.appendChild(card);
+        });
+      }
+
+      function renderAddons(listEl, items, setRef) {
+        listEl.innerHTML = "";
+        items.forEach((item) => {
+          const row = document.createElement("label");
+          row.className =
+            "flex items-center justify-between px-3 h-11 rounded-lg border border-base-200 hover:bg-base-100 cursor-pointer";
+          row.innerHTML = `
+        <div class="flex items-center gap-3">
+          <input type="checkbox" class="checkbox checkbox-sm" value="${item.id}">
+          <span>${item.name}</span>
+        </div>
+        <span class="text-sm">৳${item.price}</span>
+      `;
+          const input = row.querySelector("input");
+          input.checked = setRef.has(item.id);
+          input.addEventListener("change", (e) => {
+            if (e.target.checked) setRef.add(item.id);
+            else setRef.delete(item.id);
+          });
+          listEl.appendChild(row);
+        });
+      }
+
+      // ========= Modal Flow =========
+      function openDishStep(dayIndex, mealSlot) {
+        state.activeDayIndex = dayIndex;
+        state.activeMealSlot = mealSlot;
+
+        const sel = selectionFor(dayIndex, mealSlot);
+        state.temp.dishId = sel.dishId;
+        state.temp.sides = new Set(sel.sides);
+        state.temp.drinks = new Set(sel.drinks);
+
+        document.getElementById("modalTitle").textContent = `${
+          DAYS[dayIndex]
+        } (${slotLabel(mealSlot)}) — Choose your dish`;
+
+        stepAddons.classList.add("hidden");
+        stepDish.classList.remove("hidden");
+        renderDishCards();
+        dlg.showModal();
+      }
+
+      function goToAddonsStep() {
+        document.getElementById("modalTitle").textContent = `${
+          DAYS[state.activeDayIndex]
+        } (${slotLabel(state.activeMealSlot)}) — Add-ons (optional)`;
+        stepDish.classList.add("hidden");
+        stepAddons.classList.remove("hidden");
+        renderAddons(sidesList, SIDES, state.temp.sides);
+        renderAddons(drinksList, DRINKS, state.temp.drinks);
+      }
+
+      function saveModal() {
+        const i = state.activeDayIndex;
+        const slot = state.activeMealSlot;
+        if (i == null || !slot) return;
+
+        const sel = selectionFor(i, slot);
+        sel.dishId = state.temp.dishId;
+        sel.sides = [...state.temp.sides];
+        sel.drinks = [...state.temp.drinks];
+
+        dlg.close();
+        renderDays();
+        renderSummary(); // also saves
+      }
+
+      // ========= Bindings =========
+      document
+        .querySelectorAll('input[name="meal_preference"]')
+        .forEach((r) => {
+          r.addEventListener("change", (e) => {
+            state.mealPref = e.target.value;
+            renderDays();
+            renderSummary(); // also saves
+          });
+        });
+
+      const startDateEl = document.getElementById("startDate");
+      if (startDateEl) {
+        startDateEl.addEventListener("change", saveToStorage);
+      }
+
+      document
+        .getElementById("saveAddons")
+        .addEventListener("click", saveModal);
+      document
+        .getElementById("skipAddons")
+        .addEventListener("click", saveModal);
+
+      // ========= Init =========
+      // set a default radio so the element exists
+      const defaultRadio = document.querySelector(
+        'input[name="meal_preference"][value="lunch"]'
+      );
+      if (defaultRadio) defaultRadio.checked = true;
+
+      // load saved data (if any) THEN render
+      loadFromStorage();
+      renderDays();
+      renderSummary();
+
+      function resetPlan() {
+        // Clear localStorage
+        localStorage.removeItem(STORAGE_KEY);
+
+        // Reset state
+        state.mealPref = "lunch";
+        state.selections = DAYS.map(() => ({
+          breakfast: { dishId: null, sides: [], drinks: [] },
+          lunch: { dishId: null, sides: [], drinks: [] },
+          dinner: { dishId: null, sides: [], drinks: [] },
+        }));
+
+        // Reset UI (radio + date)
+        const startDateEl = document.getElementById("startDate");
+        if (startDateEl) startDateEl.value = "";
+
+        const radio = document.querySelector(
+          'input[name="meal_preference"][value="lunch"]'
+        );
+        if (radio) radio.checked = true;
+
+        // Re-render UI
+        renderDays();
+        renderSummary();
+      }
+
+      document.getElementById("resetPlanBtn")?.addEventListener("click", () => {
+        if (confirm("Are you sure you want to reset your weekly plan?")) {
+          resetPlan();
+        }
+      });
+    </script>
+
+    <!-- sidebar -->
+    <script src="./assets/js/sidebar.js"></script>
+
+    <script>
+      function cartDrawer() {
+        return {
+          cart: [
+            {
+              name: "Margherita Pizza",
+              desc: "Cheese, Tomato",
+              price: 250,
+              qty: 1,
+              image: "/assets/images/pizza.png",
+            },
+            {
+              name: "Beef Burger",
+              desc: "Lettuce, Cheese",
+              price: 320,
+              qty: 2,
+              image: "/assets/images/burger.png",
+            },
+          ],
+          get badgeCount() {
+            return this.cart.reduce((n, it) => n + it.qty, 0);
+          },
+          subtotal() {
+            return this.cart.reduce((s, it) => s + it.price * it.qty, 0);
+          },
+          increment(i) {
+            this.cart[i].qty++;
+          },
+          decrement(i) {
+            if (this.cart[i].qty > 1) this.cart[i].qty--;
+          },
+          remove(i) {
+            this.cart.splice(i, 1);
+          },
+        };
+      }
+    </script>
+
+    <script src="./assets/js/aside.js"></script>
+  </body>
+</html>
