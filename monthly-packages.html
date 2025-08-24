@@ -382,7 +382,6 @@
     </div>
 
     <!-- Container -->
-<!-- Tailwind + DaisyUI assumed loaded globally -->
 <div class="max-w-7xl px-4 mx-auto py-10 lg:py-16">
   <!-- Header -->
   <div class="flex md:items-center justify-between flex-col md:flex-row gap-4">
@@ -402,7 +401,7 @@
     </div>
   </div>
 
-  <!-- Meal Preference (multi-select) -->
+  <!-- Meal Preference (multi-select, none pre-checked) -->
   <div class="bg-customRed-100/10 mt-6 px-4 pt-4 pb-6 md:pt-4 md:pb-6 rounded-xl">
     <div class="flex items-center justify-between mb-2">
       <h4 class="font-oswald font-medium text-lg text-slate-900 flex items-center gap-2">
@@ -412,7 +411,9 @@
       <span class="bg-customRed-100 text-white font-jost px-2 py-1 rounded-full text-xs">Choose one or more</span>
     </div>
 
-    <p class="font-jost text-sm text-gray-600 mb-4">Select which meal slots you want to plan. You can pick Breakfast, Lunch, and/or Dinner; choose differently per day while planning.</p>
+    <p class="font-jost text-sm text-gray-600 mb-4">
+      Select which meal slots you want to plan. You can pick Breakfast, Lunch, Tiffin, and/or Dinner; choose differently per day while planning.
+    </p>
 
     <div id="mealPrefGroup" class="font-jost text-gray-700 gap-3 md:gap-4 flex flex-wrap">
       <label class="border border-gray-400 rounded-lg px-4 py-3 hover:bg-white/60 transition cursor-pointer flex items-center gap-2">
@@ -424,13 +425,17 @@
         <span class="text-base">Lunch</span>
       </label>
       <label class="border border-gray-400 rounded-lg px-4 py-3 hover:bg-white/60 transition cursor-pointer flex items-center gap-2">
+        <input type="checkbox" id="pref_tiffin" value="tiffin" class="checkbox checkbox-primary checkbox-sm" />
+        <span class="text-base">Tiffin</span>
+      </label>
+      <label class="border border-gray-400 rounded-lg px-4 py-3 hover:bg-white/60 transition cursor-pointer flex items-center gap-2">
         <input type="checkbox" id="pref_dinner" value="dinner" class="checkbox checkbox-primary checkbox-sm" />
         <span class="text-base">Dinner</span>
       </label>
     </div>
   </div>
 
-  <!-- Week Tabs (after Meal Preferences) -->
+  <!-- Week Tabs -->
   <div class="bg-customRed-100/10 p-4 rounded-2xl mt-6 shadow-md border border-customRed-100/30">
     <div id="weekTabs" class="mt-2 flex items-center justify-between gap-3 flex-wrap">
       <div class="tabs tabs-boxed w-fit bg-white shadow-sm rounded-xl overflow-hidden">
@@ -443,7 +448,7 @@
         Copy Week 1 → All Weeks
       </button>
     </div>
-    <p class="text-xs text-slate-600 mt-3 italic">💡 Tip: Plan Week 1 first, then use the button to duplicate it to all remaining weeks.</p>
+    <p class="text-xs text-slate-600 mt-3 italic">💡 Tip: Plan Week 1 first, then copy it to the rest.</p>
   </div>
 
   <!-- Selected Meals Summary -->
@@ -482,7 +487,7 @@
 
         <div>
           <p class="text-sm text-base-content/70 mb-2">Selected meals (current week)</p>
-          <ul id="summaryList" class="text-sm space-y-2 pb-2"><!-- Filled by JS --></ul>
+          <ul id="summaryList" class="text-sm space-y-2 pb-2"></ul>
         </div>
 
         <div class="divider my-2"></div>
@@ -506,157 +511,128 @@
   </div>
 </div>
 
-<!-- DaisyUI Modal (dialog) -->
+<!-- DaisyUI Modal (dialog) — Multi-select dishes + shared add-ons -->
 <dialog id="mealModal" class="modal">
-  <div class="modal-box max-w-3xl">
-    <div class="flex items-center justify-between mb-4">
-      <h3 id="modalTitle" class="font-oswald text-xl">Choose your dish</h3>
+  <div class="modal-box w-[94%] max-w-5xl p-0 overflow-hidden">
+    <!-- Header -->
+    <div class="flex items-center justify-between px-5 py-4 border-b border-base-200">
+      <h3 id="modalTitle" class="font-oswald text-lg md:text-xl">Choose dishes</h3>
       <form method="dialog">
         <button class="btn btn-sm btn-circle">✕</button>
       </form>
     </div>
 
-    <!-- Step 1: Dishes -->
-    <div id="stepDish">
-      <div id="dishCards" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4"></div>
-    </div>
-
-    <!-- Step 2: Add-ons (optional) -->
-    <div id="stepAddons" class="hidden">
-      <p class="mb-3 text-base-content/80">Add optional <b>Sides</b> &amp; <b>Drinks</b></p>
-      <div class="grid sm:grid-cols-2 gap-6">
-        <!-- Sides -->
-        <div>
-          <p class="font-medium mb-2">Sides</p>
-          <div id="sidesList" class="space-y-2"></div>
-        </div>
-        <!-- Drinks -->
-        <div>
-          <p class="font-medium mb-2">Drinks</p>
-          <div id="drinksList" class="space-y-2"></div>
-        </div>
+    <!-- Body -->
+    <div class="p-4 md:p-5 overflow-y-auto max-h-[64vh]">
+      <!-- Step 1: Dishes -->
+      <div id="stepDishMulti">
+        <p class="text-sm text-base-content/70 mb-3">Select one or more dishes.</p>
+        <div id="dishGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
       </div>
 
-      <div class="mt-6 flex items-center justify-between">
-        <form method="dialog">
-          <button id="skipAddons" class="btn btn-ghost">Skip</button>
-        </form>
-        <button id="saveAddons" class="btn btn-primary">Save</button>
+      <!-- Step 2: Add-ons (shared for selected dishes) -->
+      <div id="stepAddonsMulti" class="hidden">
+        <p class="text-sm text-base-content/70 mb-3">Choose optional <b>Sides</b> &amp; <b>Drinks</b> for the selected dishes.</p>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <p class="font-medium mb-2">Sides</p>
+            <div id="sidesList" class="space-y-2"></div>
+          </div>
+          <div>
+            <p class="font-medium mb-2">Drinks</p>
+            <div id="drinksList" class="space-y-2"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="px-5 pb-5 flex items-center justify-between gap-3">
+      <span id="selectedCount" class="text-sm text-base-content/70">0 selected</span>
+
+      <!-- Footer for Step 1 -->
+      <div id="footerStep1" class="flex gap-2">
+        <form method="dialog"><button class="btn btn-ghost">Cancel</button></form>
+        <button id="nextToAddonsBtn" class="btn btn-primary" disabled>Next</button>
+      </div>
+
+      <!-- Footer for Step 2 -->
+      <div id="footerStep2" class="hidden flex gap-2">
+        <button id="backToDishesBtn" class="btn">Back</button>
+        <button id="confirmAddonsBtn" class="btn btn-primary">Add Selected</button>
       </div>
     </div>
   </div>
+
   <form method="dialog" class="modal-backdrop">
     <button>Close</button>
   </form>
 </dialog>
 
 <script>
-  // ========= Static Data with Online IMAGES =========
+  // ========= Static Data =========
   const DAYS = ["SATURDAY","SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"];
+  const SLOT_ORDER = ["breakfast","lunch","tiffin","dinner"]; // keep UI order
 
   const DISHES = [
-    { id: "chicken_bowl", name: "Chicken Bowl", desc: "Grilled chicken, rice, veggies", price: 220, img: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&q=80&auto=format&fit=crop" },
-    { id: "beef_curry", name: "Beef Curry", desc: "Slow cooked, medium spicy", price: 260, img: "https://images.unsplash.com/photo-1604908176997-43165283d680?w=800&q=80&auto=format&fit=crop" },
-    { id: "veg_mixed", name: "Veg Mixed", desc: "Mixed veggies & lentils", price: 180, img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&q=80&auto=format&fit=crop" },
-    { id: "pasta_alfredo", name: "Pasta Alfredo", desc: "Creamy alfredo sauce", price: 240, img: "https://images.unsplash.com/photo-1521389508051-d7ffb5dc8bbf?w=800&q=80&auto=format&fit=crop" },
-    { id: "fish_grill", name: "Grilled Fish", desc: "Lemon butter, salad", price: 280, img: "https://images.unsplash.com/photo-1553621042-f6e147245754?w=800&q=80&auto=format&fit=crop" },
-    { id: "khichuri_egg", name: "Khichuri & Egg", desc: "Comfort combo", price: 160, img: "https://images.unsplash.com/photo-1526318472351-c75fcf070305?w=800&q=80&auto=format&fit=crop" },
+    { id: "chicken_bowl",  name: "Chicken Bowl",  desc: "Grilled chicken, rice, veggies", price: 220, img: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&q=80&auto=format&fit=crop" },
+    { id: "beef_curry",    name: "Beef Curry",    desc: "Slow cooked, medium spicy",       price: 260, img: "https://images.unsplash.com/photo-1604908176997-43165283d680?w=800&q=80&auto=format&fit=crop" },
+    { id: "veg_mixed",     name: "Veg Mixed",     desc: "Mixed veggies & lentils",         price: 180, img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&q=80&auto=format&fit=crop" },
+    { id: "pasta_alfredo", name: "Pasta Alfredo", desc: "Creamy alfredo sauce",            price: 240, img: "https://images.unsplash.com/photo-1521389508051-d7ffb5dc8bbf?w=800&q=80&auto=format&fit=crop" },
+    { id: "fish_grill",    name: "Grilled Fish",  desc: "Lemon butter, salad",             price: 280, img: "https://images.unsplash.com/photo-1553621042-f6e147245754?w=800&q=80&auto=format&fit=crop" },
+    { id: "khichuri_egg",  name: "Khichuri & Egg",desc: "Comfort combo",                   price: 160, img: "https://images.unsplash.com/photo-1526318472351-c75fcf070305?w=800&q=80&auto=format&fit=crop" },
   ];
 
-  const SIDES = [
-    { id: "salad", name: "Green Salad", price: 60 },
-    { id: "fries", name: "Fries", price: 90 },
-    { id: "bread", name: "Garlic Bread", price: 70 },
-  ];
+  const SIDES  = [{ id:"salad", name:"Green Salad", price:60 },{ id:"fries", name:"Fries", price:90 },{ id:"bread", name:"Garlic Bread", price:70 }];
+  const DRINKS = [{ id:"water", name:"Mineral Water", price:20 },{ id:"soda", name:"Soft Drink", price:40 },{ id:"juice", name:"Fresh Juice", price:120 }];
 
-  const DRINKS = [
-    { id: "water", name: "Mineral Water", price: 20 },
-    { id: "soda", name: "Soft Drink", price: 40 },
-    { id: "juice", name: "Fresh Juice", price: 120 },
-  ];
+  const PLACEHOLDER_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='360'%3E%3Crect width='100%25' height='100%25' fill='%23e5e7eb'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%239ca3af' font-family='Arial' font-size='20'%3ENo image%3C/text%3E%3C/svg%3E";
 
-  // ========= Storage helpers =========
-  const STORAGE_KEY = "monthly_plan_state_v2"; // v2 to support multi-select prefs
-  const LEGACY_WEEKLY_KEY = "weekly_plan_state_v1"; // migrate old weekly -> month week1
-
+  // ========= Minimal Storage =========
+  const STORAGE_KEY = "monthly_plan_state_min";
   function saveToStorage() {
     try {
       const startDateEl = document.getElementById("startDate");
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({
-          mealPrefs: Array.from(state.mealPrefs),
-          monthlySelections: state.monthlySelections,
-          currentWeekIndex: state.currentWeekIndex,
-          startDate: startDateEl ? startDateEl.value : null,
-        })
-      );
-    } catch (e) { console.warn("Save failed:", e); }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        mealPrefs: Array.from(state.mealPrefs),
+        monthlySelections: state.monthlySelections,
+        currentWeekIndex: state.currentWeekIndex,
+        startDate: startDateEl?.value || null,
+      }));
+    } catch {}
   }
-
-  function migrateFromLegacyWeekly() {
-    // Try v1 monthly first
-    const v1 = localStorage.getItem("monthly_plan_state_v1");
-    if (v1) {
-      try {
-        const data = JSON.parse(v1);
-        if (Array.isArray(data.monthlySelections)) state.monthlySelections = data.monthlySelections;
-        if (typeof data.mealPref === 'string') applyLegacyMealPref(data.mealPref);
-        if (Number.isInteger(data.currentWeekIndex)) state.currentWeekIndex = Math.max(0, Math.min(3, data.currentWeekIndex));
-        const startDateEl = document.getElementById("startDate");
-        if (startDateEl && data.startDate) startDateEl.value = data.startDate;
-      } catch(_){}
-    }
-    // Legacy weekly -> week 1
-    const raw = localStorage.getItem(LEGACY_WEEKLY_KEY);
-    if (!raw) return;
-    try {
-      const data = JSON.parse(raw);
-      if (Array.isArray(data.selections) && data.selections.length === DAYS.length) {
-        state.monthlySelections[0] = data.selections.map((s) => ({
-          breakfast: { dishId: s?.breakfast?.dishId ?? null, sides: Array.isArray(s?.breakfast?.sides) ? s.breakfast.sides : [], drinks: Array.isArray(s?.breakfast?.drinks) ? s.breakfast.drinks : [], },
-          lunch:     { dishId: s?.lunch?.dishId ?? null,     sides: Array.isArray(s?.lunch?.sides) ? s.lunch.sides : [],       drinks: Array.isArray(s?.lunch?.drinks) ? s.lunch.drinks : [], },
-          dinner:    { dishId: s?.dinner?.dishId ?? null,    sides: Array.isArray(s?.dinner?.sides) ? s.dinner.sides : [],   drinks: Array.isArray(s?.dinner?.drinks) ? s.dinner.drinks : [], },
-        }));
-      }
-      if (typeof data.mealPref === 'string') applyLegacyMealPref(data.mealPref);
-      const startDateEl = document.getElementById("startDate");
-      if (startDateEl && data.startDate) startDateEl.value = data.startDate;
-      localStorage.removeItem(LEGACY_WEEKLY_KEY);
-    } catch (_) {}
-  }
-
   function loadFromStorage() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) { migrateFromLegacyWeekly(); reflectMealPrefUI(); return; }
+      if (!raw) return;
       const data = JSON.parse(raw);
       if (Array.isArray(data.mealPrefs)) state.mealPrefs = new Set(data.mealPrefs);
-      if (
-        Array.isArray(data.monthlySelections) &&
-        data.monthlySelections.length === state.monthlySelections.length &&
-        data.monthlySelections.every(week => Array.isArray(week) && week.length === DAYS.length)
-      ) {
+      if (Array.isArray(data.monthlySelections) && data.monthlySelections.length === 4) {
         state.monthlySelections = data.monthlySelections;
       }
       if (Number.isInteger(data.currentWeekIndex)) state.currentWeekIndex = Math.max(0, Math.min(3, data.currentWeekIndex));
-      const startDateEl = document.getElementById("startDate");
-      if (startDateEl && data.startDate) startDateEl.value = data.startDate;
-      reflectMealPrefUI();
-    } catch (e) { console.warn("Load failed:", e); }
+      if (data.startDate) { const el = document.getElementById("startDate"); if (el) el.value = data.startDate; }
+    } catch {}
   }
 
   // ========= State =========
-  const emptyDay = () => ({ breakfast: { dishId: null, sides: [], drinks: [] }, lunch: { dishId: null, sides: [], drinks: [] }, dinner: { dishId: null, sides: [], drinks: [] }, });
+  const emptyDay = () => ({
+    breakfast: { items: [] },
+    lunch:     { items: [] },
+    tiffin:    { items: [] },
+    dinner:    { items: [] },
+  });
   const newWeek = () => DAYS.map(() => emptyDay());
 
   const state = {
-    mealPrefs: new Set(["lunch"]),         // multi-select prefs: breakfast/lunch/dinner
-    monthlySelections: [newWeek(), newWeek(), newWeek(), newWeek()], // 4 weeks
+    mealPrefs: new Set(), // none checked by default
+    monthlySelections: [newWeek(), newWeek(), newWeek(), newWeek()],
     currentWeekIndex: 0,
     activeDayIndex: null,
-    activeMealSlot: "lunch",
-    temp: { dishId: null, sides: new Set(), drinks: new Set() },
+    activeMealSlot: null,
+    tempSelectedDishIds: new Set(),
+    tempSides:  new Set(),
+    tempDrinks: new Set(),
   };
 
   // ========= DOM Refs =========
@@ -673,18 +649,25 @@
   const copyWeek1Btn = document.getElementById("copyWeek1Btn");
 
   const dlg = document.getElementById("mealModal");
-  const stepDish = document.getElementById("stepDish");
-  const stepAddons = document.getElementById("stepAddons");
-  const dishCards = document.getElementById("dishCards");
-  const sidesList = document.getElementById("sidesList");
-  const drinksList = document.getElementById("drinksList");
+  const stepDishMulti   = document.getElementById("stepDishMulti");
+  const stepAddonsMulti = document.getElementById("stepAddonsMulti");
+  const dishGrid        = document.getElementById("dishGrid");
+  const sidesList       = document.getElementById("sidesList");
+  const drinksList      = document.getElementById("drinksList");
+  const selectedCountEl = document.getElementById("selectedCount");
+  const nextToAddonsBtn = document.getElementById("nextToAddonsBtn");
+  const backToDishesBtn = document.getElementById("backToDishesBtn");
+  const confirmAddonsBtn= document.getElementById("confirmAddonsBtn");
+  const footerStep1     = document.getElementById("footerStep1");
+  const footerStep2     = document.getElementById("footerStep2");
 
   // ========= Helpers =========
-  const PLACEHOLDER_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='360'%3E%3Crect width='100%25' height='100%25' fill='%23e5e7eb'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%239ca3af' font-family='Arial' font-size='20'%3ENo image%3C/text%3E%3C/svg%3E";
+  const slotLabel = (slot) =>
+    slot === "breakfast" ? "Breakfast" :
+    slot === "lunch"     ? "Lunch"     :
+    slot === "tiffin"    ? "Tiffin"    : "Dinner";
 
-  const slotLabel = (slot) => slot === "breakfast" ? "Breakfast" : slot === "lunch" ? "Lunch" : "Dinner";
   const dishById = (id) => DISHES.find((d) => d.id === id);
-  const selectionFor = (container, dayIdx, slot) => container[dayIdx][slot];
 
   function addonNames(ids) {
     return ids.map((id) => {
@@ -694,135 +677,164 @@
     }).filter(Boolean);
   }
 
-  function currentSelections() { return state.monthlySelections[state.currentWeekIndex]; }
-
   function getSelectedSlots() {
-    // Ensure at least one slot; default to lunch if none selected
-    const slots = Array.from(state.mealPrefs);
-    return slots.length ? slots : ["lunch"];
+    return SLOT_ORDER.filter((s) => state.mealPrefs.has(s));
+  }
+
+  function currentWeek() {
+    return state.monthlySelections[state.currentWeekIndex];
   }
 
   function reflectMealPrefUI() {
-    document.getElementById('pref_breakfast').checked = state.mealPrefs.has('breakfast');
-    document.getElementById('pref_lunch').checked = state.mealPrefs.has('lunch');
-    document.getElementById('pref_dinner').checked = state.mealPrefs.has('dinner');
+    ["pref_breakfast","pref_lunch","pref_tiffin","pref_dinner"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.checked = state.mealPrefs.has(el.value);
+    });
   }
 
-  // Support migrating old single-value mealPref strings
-  function applyLegacyMealPref(val){
-    const map = {
-      breakfast: ["breakfast"],
-      lunch: ["lunch"],
-      dinner: ["dinner"],
-      breakfast_lunch: ["breakfast","lunch"],
-      breakfast_dinner: ["breakfast","dinner"],
-      lunch_dinner: ["lunch","dinner"],
-      all: ["breakfast","lunch","dinner"],
-      tiffin: ["lunch"],
-    };
-    if (map[val]) state.mealPrefs = new Set(map[val]);
-  }
-
-  function deepCloneWeek(week) {
-    return week.map(day => ({
-      breakfast: { dishId: day.breakfast.dishId, sides: [...day.breakfast.sides], drinks: [...day.breakfast.drinks] },
-      lunch:     { dishId: day.lunch.dishId,     sides: [...day.lunch.sides],     drinks: [...day.lunch.drinks]     },
-      dinner:    { dishId: day.dinner.dishId,    sides: [...day.dinner.sides],    drinks: [...day.dinner.drinks]    },
-    }));
-  }
-
-  // ========= Render: Days (dynamic slots) =========
-  function renderDays() {
-    daysContainer.innerHTML = "";
-    const slots = getSelectedSlots();
-    const colsClass = slots.length === 3 ? "lg:grid-cols-3 md:grid-cols-2 grid-cols-1" : (slots.length === 2 ? "md:grid-cols-2 grid-cols-1" : "grid-cols-1");
-
-    const activeContainer = currentSelections();
-
-    const cardHTML = (dayIdx, slot) => {
-      const sel = selectionFor(activeContainer, dayIdx, slot);
-      const dish = dishById(sel.dishId);
-      const names = addonNames([...(sel.sides||[]), ...(sel.drinks||[])]).join(", ");
-      const img = dish?.img || PLACEHOLDER_IMG;
-      return `
-        <button data-day="${dayIdx}" data-slot="${slot}"
-          class="w-full text-left border border-customRed-100/60 rounded-lg px-4 py-3 transition hover:bg-customRed-100/10 focus:ring-2 focus:ring-customRed-100">
-          <div class="flex items-start gap-3">
-            <img src="${img}" alt="${dish?.name || "Dish"}" loading="lazy" class="w-14 h-14 rounded-md object-cover border border-white/60 shadow-sm">
-            <div class="min-w-0">
-              <div class="flex items-center justify-between gap-3">
-                <span class="text-sm font-medium text-slate-700">${slotLabel(slot)}</span>
-                <span class="text-xs text-slate-500">${dish ? "Change" : "Select"}</span>
-              </div>
-              <div class="mt-0.5 text-sm truncate">${dish ? dish.name : "Select a dish..."}</div>
-              <div class="text-xs text-slate-500 truncate">${names || "Add-ons (optional)"}</div>
-            </div>
+  // ========= Render: Days =========
+  function itemRowHTML(dayIdx, slot, item, idx) {
+    const dish = dishById(item.dishId);
+    const img  = dish?.img || PLACEHOLDER_IMG;
+    const addonsTxt = addonNames([...(item.sides||[]), ...(item.drinks||[])]).join(", ");
+    return `
+      <div class="flex items-center justify-between bg-base-100 border border-base-200 rounded-lg p-2 overflow-hidden">
+        <div class="flex items-center gap-2 flex-1 min-w-0">
+          <img src="${img}" class="w-10 h-10 rounded-md object-cover shrink-0" alt="">
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-medium truncate">${dish?.name || "Dish"}</div>
+            <div class="text-xs text-base-content/60 truncate">${addonsTxt || "No add-ons"}</div>
           </div>
-        </button>
-      `;
-    };
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            data-action="del-item"
+            data-day="${dayIdx}"
+            data-slot="${slot}"
+            data-index="${idx}"
+            class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-600 text-white text-xs hover:bg-red-700 transition"
+            title="Delete">
+            <i class="fa-regular fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    `;
+  }
 
-    activeContainer.forEach((_, i) => {
+  function slotCardHTML(dayIdx, slot) {
+    const items = currentWeek()[dayIdx][slot].items || [];
+    const listHTML = items.length
+      ? items.map((it, idx) => itemRowHTML(dayIdx, slot, it, idx)).join("")
+      : `<div class="text-sm text-base-content/60">No ${slotLabel(slot)} items yet.</div>`;
+    return `
+      <div class="w-full border border-customRed-100/60 rounded-lg p-3 bg-white cursor-pointer group" data-open="${dayIdx}:${slot}">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm font-medium text-slate-700">${slotLabel(slot)}</span>
+          <span class="text-xs text-slate-500">${items.length} selected</span>
+        </div>
+        <div class="space-y-2">${listHTML}</div>
+        <div class="mt-2 text-[11px] text-slate-400 group-hover:text-slate-600">Click to select multiple</div>
+      </div>
+    `;
+  }
+
+  function renderDays() {
+    const slots = getSelectedSlots();
+    daysContainer.innerHTML = "";
+
+    if (slots.length === 0) {
+      daysContainer.innerHTML = `
+        <div class="px-5 py-6 text-base-content/70">
+          <div class="rounded-lg border border-dashed border-base-300 bg-base-100 p-6 text-center">
+            <p class="font-medium">No meal preferences selected</p>
+            <p class="text-sm mt-1">Turn on Breakfast, Lunch, Tiffin, or Dinner above to start adding dishes.</p>
+          </div>
+        </div>`;
+      return;
+    }
+
+    const colsClass =
+      slots.length === 4 ? "lg:grid-cols-4 md:grid-cols-2 grid-cols-1" :
+      slots.length === 3 ? "lg:grid-cols-3 md:grid-cols-2 grid-cols-1" :
+      slots.length === 2 ? "md:grid-cols-2 grid-cols-1" : "grid-cols-1";
+
+    currentWeek().forEach((_, i) => {
       const row = document.createElement("div");
       row.className = "px-5 py-4";
       row.innerHTML = `
         <div class="flex items-start gap-2 md:gap-4">
           <div class="w-28 shrink-0 pt-3 text-base-content font-medium">${DAYS[i]}</div>
-          <div class="flex-1 grid ${colsClass} gap-3">${slots.map((slot) => cardHTML(i, slot)).join("")}</div>
-        </div>
-      `;
-      row.querySelectorAll("button[data-day]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const day = Number(btn.getAttribute("data-day"));
-          const slot = btn.getAttribute("data-slot");
-          openDishStep(day, slot);
+          <div class="flex-1 grid ${colsClass} gap-3">
+            ${slots.map((slot) => slotCardHTML(i, slot)).join("")}
+          </div>
+        </div>`;
+
+      // Open modal (ignore delete clicks)
+      row.querySelectorAll("[data-open]").forEach((el) => {
+        el.addEventListener("click", (e) => {
+          if (e.target.closest('button[data-action="del-item"]')) return;
+          const [d, s] = el.getAttribute("data-open").split(":");
+          openMultiSelectModal(Number(d), s);
         });
       });
+
+      // Delete item
+      row.querySelectorAll('button[data-action="del-item"]').forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault(); e.stopPropagation();
+          const day  = Number(btn.getAttribute("data-day"));
+          const slot = btn.getAttribute("data-slot");
+          const idx  = Number(btn.getAttribute("data-index"));
+          const arr  = currentWeek()[day][slot].items;
+          if (!arr || arr.length <= idx) return;
+          arr.splice(idx, 1);
+          renderDays(); renderSummary(); saveToStorage();
+        });
+      });
+
       daysContainer.appendChild(row);
     });
   }
 
-  // ========= Render: Summary =========
-  function calcCost(sel) {
-    const dish = dishById(sel.dishId);
+  // ========= Summary =========
+  function itemCost(it) {
+    const dish = dishById(it.dishId);
     const base = dish?.price || 0;
-    const sidesCost = (sel.sides||[]).reduce((sum, id) => sum + (SIDES.find(x=>x.id===id)?.price || 0), 0);
-    const drinksCost = (sel.drinks||[]).reduce((sum, id) => sum + (DRINKS.find(x=>x.id===id)?.price || 0), 0);
-    return base + sidesCost + drinksCost;
+    const sides  = (it.sides||[]).reduce((sum,id)=> sum + (SIDES.find(x=>x.id===id)?.price||0), 0);
+    const drinks = (it.drinks||[]).reduce((sum,id)=> sum + (DRINKS.find(x=>x.id===id)?.price||0), 0);
+    return base + sides + drinks;
   }
 
   function renderSummary() {
     summaryList.innerHTML = "";
     const slots = getSelectedSlots();
 
-    // Current week detail
-    const activeContainer = currentSelections();
-    activeContainer.forEach((_, i) => {
+    // Current week detail (no per-line price in list)
+    currentWeek().forEach((_, i) => {
       slots.forEach((slot) => {
-        const s = selectionFor(activeContainer, i, slot);
-        if (!s.dishId) return;
-        const dish = dishById(s.dishId);
-        const names = addonNames([...(s.sides||[]), ...(s.drinks||[])]).join(", ");
-        const cost = calcCost(s);
-        const li = document.createElement("li");
-        li.className = "flex items-center gap-2";
-        li.innerHTML = `
-          <span class="text-base-content/80">${DAYS[i]} (${slotLabel(slot)})</span> —
-          <span class="font-medium">${dish?.name || ""}</span>
-          <span class="text-base-content/60">${names ? " | " + names : ""}</span>
-          <span class="ml-auto">৳${cost}</span>
-        `;
-        summaryList.appendChild(li);
+        (currentWeek()[i][slot].items || []).forEach((it) => {
+          const dish = dishById(it.dishId);
+          const names = addonNames([...(it.sides||[]), ...(it.drinks||[])]).join(", ");
+          const li = document.createElement("li");
+          li.className = "flex items-center gap-2";
+          li.innerHTML = `
+            <span class="text-base-content/80">${DAYS[i]} (${slotLabel(slot)})</span> —
+            <span class="font-medium">${dish?.name || ""}</span>
+            <span class="text-base-content/60">${names ? " | " + names : ""}</span>`;
+          summaryList.appendChild(li);
+        });
       });
     });
 
-    // Per-week totals + Monthly total
+    // Per-week totals and monthly total (only selected slots)
     const weeklyTotals = state.monthlySelections.map(week => {
       let sum = 0;
-      week.forEach((_, i) => slots.forEach(slot => {
-        const s = week[i][slot];
-        if (s?.dishId) sum += calcCost(s);
-      }));
+      week.forEach((_, i) => {
+        slots.forEach(slot => {
+          (week[i][slot].items || []).forEach(it => { sum += itemCost(it); });
+        });
+      });
       return sum;
     });
     const monthTotal = weeklyTotals.reduce((a,b)=>a+b,0);
@@ -841,104 +853,144 @@
     summaryPlanTitle.textContent = `Monthly Plan (Week ${state.currentWeekIndex+1})`;
 
     saveToStorage();
-    planTitle.textContent = "Monthly Plan";
     planSubtitle.textContent = `Set meals for 4 weeks. Viewing Week ${state.currentWeekIndex+1}.`;
   }
 
-  // ========= Modal: Dish Cards =========
-  function renderDishCards() {
-    dishCards.innerHTML = "";
+  // ========= Modal: Multi-select =========
+  function updateSelectedCount() {
+    const n = state.tempSelectedDishIds.size;
+    selectedCountEl.textContent = `${n} selected`;
+    nextToAddonsBtn.disabled = n === 0;
+  }
+
+  function renderDishGrid() {
+    dishGrid.innerHTML = "";
+    const selected = state.tempSelectedDishIds;
+
     DISHES.forEach((d) => {
-      const card = document.createElement("button");
-      card.className = "card card-bordered bg-base-100 hover:shadow transition text-left overflow-hidden";
+      const card  = document.createElement("button");
+      const isSel = selected.has(d.id);
+      card.type = "button";
+      card.className = "relative card card-bordered bg-base-100 hover:shadow transition text-left overflow-hidden cursor-pointer";
       card.innerHTML = `
-        <figure class="aspect-[1/1] sm:aspect-[4/3] overflow-hidden">
+        <figure class="aspect-[4/3] overflow-hidden">
           <img src="${d.img || PLACEHOLDER_IMG}" alt="${d.name}" loading="lazy" class="w-full h-full object-cover">
         </figure>
-        <div class="card-body p-2 sm:p-4">
-          <div class="flex items-start justify-between w-full">
-            <div class="min-w-0">
-              <h4 class="card-title text-sm sm:text-base leading-tight">${d.name}</h4>
-              <p class="text-xs sm:text-sm text-base-content/70 truncate">${d.desc}</p>
-            </div>
-            <span class="badge badge-outline shrink-0 text-xs sm:text-sm">৳${d.price}</span>
-          </div>
+        <div class="card-body p-2">
+          <h4 class="card-title text-sm leading-tight truncate">${d.name}</h4>
+          <p class="text-xs text-base-content/70 truncate">${d.desc}</p>
+          <span class="badge badge-outline text-xs mt-1">৳${d.price}</span>
+        </div>
+        <div class="absolute top-2 right-2">
+          <input type="checkbox" ${isSel ? "checked" : ""} class="checkbox checkbox-primary checkbox-sm pointer-events-none" />
         </div>`;
-      card.addEventListener("click", () => { state.temp.dishId = d.id; goToAddonsStep(); });
-      dishCards.appendChild(card);
+      const toggle = () => {
+        if (selected.has(d.id)) selected.delete(d.id);
+        else selected.add(d.id);
+        card.querySelector("input[type='checkbox']").checked = selected.has(d.id);
+        card.classList.toggle("ring", selected.has(d.id));
+        card.classList.toggle("ring-primary", selected.has(d.id));
+        card.classList.toggle("ring-2", selected.has(d.id));
+        updateSelectedCount();
+      };
+      card.addEventListener("click", toggle);
+      if (isSel) card.classList.add("ring","ring-primary","ring-2");
+      dishGrid.appendChild(card);
     });
   }
 
-  function renderAddons(listEl, items, setRef) {
+  function renderAddonsOptions(listEl, items, setRef) {
     listEl.innerHTML = "";
     items.forEach((item) => {
       const row = document.createElement("label");
       row.className = "flex items-center justify-between px-3 h-11 rounded-lg border border-base-200 hover:bg-base-100 cursor-pointer";
       row.innerHTML = `
         <div class="flex items-center gap-3">
-          <input type="checkbox" class="checkbox checkbox-sm" value="${item.id}">
+          <input type="checkbox" class="checkbox checkbox-sm cursor-pointer" value="${item.id}">
           <span>${item.name}</span>
         </div>
         <span class="text-sm">৳${item.price}</span>`;
       const input = row.querySelector("input");
       input.checked = setRef.has(item.id);
-      input.addEventListener("change", (e) => { if (e.target.checked) setRef.add(item.id); else setRef.delete(item.id); });
+      input.addEventListener("change", (e) => {
+        if (e.target.checked) setRef.add(item.id); else setRef.delete(item.id);
+      });
       listEl.appendChild(row);
     });
   }
 
-  // ========= Modal Flow =========
-  function openDishStep(dayIndex, mealSlot) {
+  function goToStep(step) {
+    const dishStep = step === 1;
+    stepDishMulti.classList.toggle("hidden", !dishStep);
+    stepAddonsMulti.classList.toggle("hidden", dishStep);
+    footerStep1.classList.toggle("hidden", !dishStep);
+    footerStep2.classList.toggle("hidden", dishStep);
+  }
+
+  function openMultiSelectModal(dayIndex, mealSlot) {
+    if (state.mealPrefs.size === 0) {
+      alert("Please select at least one meal preference first.");
+      return;
+    }
     state.activeDayIndex = dayIndex;
     state.activeMealSlot = mealSlot;
-    const container = currentSelections();
-    const sel = container[dayIndex][mealSlot];
-    state.temp.dishId = sel.dishId;
-    state.temp.sides = new Set(sel.sides);
-    state.temp.drinks = new Set(sel.drinks);
-
-    document.getElementById("modalTitle").textContent = `${DAYS[dayIndex]} (${slotLabel(mealSlot)}) — Choose your dish`;
-    stepAddons.classList.add("hidden");
-    stepDish.classList.remove("hidden");
-    renderDishCards();
+    state.tempSelectedDishIds = new Set();
+    state.tempSides  = new Set();
+    state.tempDrinks = new Set();
+    document.getElementById("modalTitle").textContent =
+      `${DAYS[dayIndex]} (${slotLabel(mealSlot)}) — Select dishes`;
+    goToStep(1);
+    renderDishGrid();
+    updateSelectedCount();
     dlg.showModal();
   }
 
-  function goToAddonsStep() {
-    document.getElementById("modalTitle").textContent = `${DAYS[state.activeDayIndex]} (${slotLabel(state.activeMealSlot)}) — Add-ons (optional)`;
-    stepDish.classList.add("hidden");
-    stepAddons.classList.remove("hidden");
-    renderAddons(sidesList, SIDES, state.temp.sides);
-    renderAddons(drinksList, DRINKS, state.temp.drinks);
-  }
+  nextToAddonsBtn.addEventListener("click", () => {
+    document.getElementById("modalTitle").textContent =
+      `${DAYS[state.activeDayIndex]} (${slotLabel(state.activeMealSlot)}) — Add-ons (optional)`;
+    goToStep(2);
+    renderAddonsOptions(sidesList,  SIDES,  state.tempSides);
+    renderAddonsOptions(drinksList, DRINKS, state.tempDrinks);
+  });
 
-  function saveModal() {
-    const i = state.activeDayIndex; const slot = state.activeMealSlot; if (i == null || !slot) return;
-    const container = currentSelections();
-    const sel = container[i][slot];
-    sel.dishId = state.temp.dishId;
-    sel.sides = [...state.temp.sides];
-    sel.drinks = [...state.temp.drinks];
+  backToDishesBtn.addEventListener("click", () => {
+    document.getElementById("modalTitle").textContent =
+      `${DAYS[state.activeDayIndex]} (${slotLabel(state.activeMealSlot)}) — Select dishes`;
+    goToStep(1);
+  });
+
+  confirmAddonsBtn.addEventListener("click", () => {
+    const i = state.activeDayIndex;
+    const slot = state.activeMealSlot;
+    if (i == null || !slot) return;
+    const items = currentWeek()[i][slot].items;
+
+    state.tempSelectedDishIds.forEach((dishId) => {
+      items.push({
+        dishId,
+        sides:  [...state.tempSides],
+        drinks: [...state.tempDrinks],
+      });
+    });
+
     dlg.close();
-    renderDays();
-    renderSummary();
-  }
+    renderDays(); renderSummary(); saveToStorage();
+  });
 
   // ========= Bindings =========
-  ['pref_breakfast','pref_lunch','pref_dinner'].forEach(id => {
-    document.getElementById(id).addEventListener('change', (e) => {
+  ["pref_breakfast","pref_lunch","pref_tiffin","pref_dinner"].forEach((id) => {
+    document.getElementById(id).addEventListener("change", (e) => {
       const val = e.target.value;
-      if (e.target.checked) state.mealPrefs.add(val); else state.mealPrefs.delete(val);
+      if (e.target.checked) state.mealPrefs.add(val);
+      else state.mealPrefs.delete(val);
+      reflectMealPrefUI();
       renderDays();
       renderSummary();
     });
   });
 
   document.getElementById("startDate")?.addEventListener("change", saveToStorage);
-  document.getElementById("saveAddons")?.addEventListener("click", saveModal);
-  document.getElementById("skipAddons")?.addEventListener("click", saveModal);
 
-  // Week tab clicks
   function renderWeekTabs() {
     const tabs = weekTabs.querySelectorAll('[data-week]');
     tabs.forEach((btn) => {
@@ -948,27 +1000,25 @@
     });
   }
 
-  // Copy Week 1 to Weeks 2–4
   copyWeek1Btn?.addEventListener('click', () => {
-    const w1 = deepCloneWeek(state.monthlySelections[0]);
-    for (let i = 1; i < 4; i++) state.monthlySelections[i] = deepCloneWeek(w1);
-    renderDays();
-    renderSummary();
-    saveToStorage();
+    const w1 = state.monthlySelections[0];
+    // Deep clone week1
+    const clone = w1.map(day => ({
+      breakfast: { items: day.breakfast.items.map(it => ({ dishId: it.dishId, sides: [...it.sides], drinks: [...it.drinks] })) },
+      lunch:     { items: day.lunch.items.map(it => ({ dishId: it.dishId, sides: [...it.sides], drinks: [...it.drinks] })) },
+      tiffin:    { items: day.tiffin.items.map(it => ({ dishId: it.dishId, sides: [...it.sides], drinks: [...it.drinks] })) },
+      dinner:    { items: day.dinner.items.map(it => ({ dishId: it.dishId, sides: [...it.sides], drinks: [...it.drinks] })) },
+    }));
+    for (let i = 1; i < 4; i++) {
+      state.monthlySelections[i] = JSON.parse(JSON.stringify(clone));
+    }
+    renderDays(); renderSummary(); saveToStorage();
   });
 
-  // ========= Init =========
-  // default check Lunch
-  document.getElementById('pref_lunch').checked = true;
-  loadFromStorage();
-  renderWeekTabs();
-  renderDays();
-  renderSummary();
-
-  // Reset plan (clears all and reverts to defaults)
+  // Reset
   function resetPlan() {
     localStorage.removeItem(STORAGE_KEY);
-    state.mealPrefs = new Set(["lunch"]);
+    state.mealPrefs = new Set();
     state.monthlySelections = [newWeek(),newWeek(),newWeek(),newWeek()];
     state.currentWeekIndex = 0;
     const startDateEl = document.getElementById("startDate"); if (startDateEl) startDateEl.value = "";
@@ -977,11 +1027,18 @@
     renderDays();
     renderSummary();
   }
-
   document.getElementById("resetPlanBtn")?.addEventListener("click", () => {
     if (confirm("Are you sure you want to reset your plan?")) resetPlan();
   });
+
+  // ========= Init =========
+  loadFromStorage();
+  reflectMealPrefUI(); // none checked by default
+  renderWeekTabs();
+  renderDays();
+  renderSummary();
 </script>
+
 
 
 
