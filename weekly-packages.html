@@ -476,12 +476,12 @@
           <p class="font-semibold text-lg">Total</p>
           <p id="totalAmount" class="font-bold text-lg">৳0</p>
         </div>
-<a href="checkout.html"
-   class="group relative inline-flex w-full items-center justify-center rounded-md px-8 md:px-10 py-3 overflow-hidden bg-customRed-100 font-oswald text-white no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white/60">
-  <span class="pointer-events-none absolute inset-0 bg-slate-900 transform origin-center scale-0 rotate-45 transition-transform duration-500 ease-out group-hover:scale-1125"></span>
-  <span class="relative z-10 transition-colors duration-300 group-hover:text-white">CONFIRM BOOKING</span>
-</a>
 
+        <a href="checkout.html"
+           class="group relative inline-flex w-full items-center justify-center rounded-md px-8 md:px-10 py-3 overflow-hidden bg-customRed-100 font-oswald text-white no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white/60">
+          <span class="pointer-events-none absolute inset-0 bg-slate-9 00 transform origin-center scale-0 rotate-45 transition-transform duration-500 ease-out group-hover:scale-1125"></span>
+          <span class="relative z-10 transition-colors duration-300 group-hover:text-white">CONFIRM BOOKING</span>
+        </a>
 
         <button
           id="resetPlanBtn"
@@ -515,9 +515,15 @@
         <div id="dishGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
       </div>
 
-      <!-- Step 2: Add-ons -->
+      <!-- Step 2: Add-ons + Quantities -->
       <div id="stepAddonsMulti" class="hidden">
-        <p class="text-sm text-base-content/70 mb-3">Choose optional <b>Sides</b> &amp; <b>Drinks</b> for the selected dishes.</p>
+        <!-- Dish quantity -->
+        <div class="mb-5">
+          <p class="font-medium mb-2">Selected dishes &amp; quantity</p>
+          <div id="dishQtyList" class="space-y-2"></div>
+        </div>
+
+        <p class="text-sm text-base-content/70 mb-3">Choose optional <b>Sides</b> &amp; <b>Drinks</b> (with quantities).</p>
         <div class="grid sm:grid-cols-2 gap-4">
           <div>
             <p class="font-medium mb-2">Sides</p>
@@ -557,7 +563,7 @@
 <script>
   // ========= Static Data =========
   const DAYS = ["SATURDAY","SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"];
-  const SLOT_ORDER = ["breakfast","lunch","tiffin","dinner"]; // consistent order in UI
+  const SLOT_ORDER = ["breakfast","lunch","tiffin","dinner"];
   const DISHES = [
     { id:"chicken_bowl",  name:"Chicken Bowl",  desc:"Grilled chicken, rice, veggies", price:220, img:"https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&q=80&auto=format&fit=crop" },
     { id:"beef_curry",    name:"Beef Curry",    desc:"Slow cooked, medium spicy",       price:260, img:"https://images.unsplash.com/photo-1596797038530-2c107229654b?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
@@ -583,20 +589,62 @@
     } catch {}
   }
   function loadFromStorage() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
-      const data = JSON.parse(raw);
-      if (Array.isArray(data.mealPrefs)) state.mealPrefs = new Set(data.mealPrefs);
-      if (Array.isArray(data.selections) && data.selections.length === DAYS.length) {
-        state.selections = data.selections;
-      }
-      if (data.startDate) {
-        const startDateEl = document.getElementById("startDate");
-        if (startDateEl) startDateEl.value = data.startDate;
-      }
-    } catch {}
-  }
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+
+    if (Array.isArray(data.mealPrefs)) state.mealPrefs = new Set(data.mealPrefs);
+
+    if (Array.isArray(data.selections) && data.selections.length === DAYS.length) {
+      state.selections = data.selections.map((day) => {
+        Object.keys(day).forEach((slot) => {
+          const items = Array.isArray(day[slot]?.items) ? day[slot].items : [];
+          day[slot].items = items.map((it) => {
+            // Ensure base qty
+            if (typeof it.qty !== "number" || it.qty < 1) it.qty = 1;
+
+            // ---- Sides upgrade (only if the list is primitive strings) ----
+            if (Array.isArray(it.sides)) {
+              if (it.sides.length > 0 && typeof it.sides[0] === "string") {
+                it.sides = it.sides.map((id) => ({ id, qty: 1 }));
+              } else {
+                // already objects; normalize + filter bad entries
+                it.sides = it.sides
+                  .filter((x) => x && typeof x.id === "string")
+                  .map((x) => ({ id: x.id, qty: Math.max(0, parseInt(x.qty ?? 0, 10) || 0) }));
+              }
+            } else {
+              it.sides = [];
+            }
+
+            // ---- Drinks upgrade (only if the list is primitive strings) ----
+            if (Array.isArray(it.drinks)) {
+              if (it.drinks.length > 0 && typeof it.drinks[0] === "string") {
+                it.drinks = it.drinks.map((id) => ({ id, qty: 1 }));
+              } else {
+                it.drinks = it.drinks
+                  .filter((x) => x && typeof x.id === "string")
+                  .map((x) => ({ id: x.id, qty: Math.max(0, parseInt(x.qty ?? 0, 10) || 0) }));
+              }
+            } else {
+              it.drinks = [];
+            }
+
+            return it;
+          });
+        });
+        return day;
+      });
+    }
+
+    if (data.startDate) {
+      const startDateEl = document.getElementById("startDate");
+      if (startDateEl) startDateEl.value = data.startDate;
+    }
+  } catch {}
+}
+
 
   // ========= State =========
   const emptyDay = () => ({
@@ -607,13 +655,14 @@
   });
 
   const state = {
-    mealPrefs: new Set(),                 // no defaults checked
+    mealPrefs: new Set(),
     selections: DAYS.map(() => emptyDay()),
     activeDayIndex: null,
     activeMealSlot: null,
     tempSelectedDishIds: new Set(),
-    tempSides:  new Set(),
-    tempDrinks: new Set(),
+    tempDishQty: new Map(),     // dishId -> qty (>=1)
+    tempSidesQty: new Map(),    // sideId -> qty (>=0)
+    tempDrinksQty: new Map(),   // drinkId -> qty (>=0)
   };
 
   // ========= DOM refs =========
@@ -633,6 +682,7 @@
   const confirmAddonsBtn= document.getElementById("confirmAddonsBtn");
   const footerStep1     = document.getElementById("footerStep1");
   const footerStep2     = document.getElementById("footerStep2");
+  const dishQtyList     = document.getElementById("dishQtyList");
 
   // ========= Helpers =========
   const slotLabel = (slot) =>
@@ -641,17 +691,19 @@
     slot === "tiffin"    ? "Tiffin"    : "Dinner";
 
   const dishById = (id) => DISHES.find((d) => d.id === id);
+  const priceOfSide  = (id) => (SIDES.find(x=>x.id===id)?.price)||0;
+  const priceOfDrink = (id) => (DRINKS.find(x=>x.id===id)?.price)||0;
 
-  function addonNames(ids) {
-    return ids.map((id) => {
-      const s = SIDES.find((x) => x.id === id); if (s) return s.name;
-      const d = DRINKS.find((x) => x.id === id); if (d) return d.name;
+  function addonNamesWithQty(list) {
+    if (!Array.isArray(list) || list.length === 0) return [];
+    return list.map(({id, qty}) => {
+      const s = SIDES.find(x=>x.id===id); if (s) return `${s.name} x${qty}`;
+      const d = DRINKS.find(x=>x.id===id); if (d) return `${d.name} x${qty}`;
       return null;
     }).filter(Boolean);
   }
 
   function getSelectedSlots() {
-    // keep fixed order
     return SLOT_ORDER.filter((s) => state.mealPrefs.has(s));
   }
 
@@ -663,16 +715,20 @@
   }
 
   // ========= Left list (cards) =========
+  function qtyBadge(q) {
+    return q > 1 ? `<span class="ml-2 inline-flex items-center justify-center text-[10px] px-2 h-5 rounded-full bg-slate-800 text-white">x${q}</span>` : "";
+  }
+
   function itemRowHTML(dayIdx, slot, item, idx) {
     const dish = dishById(item.dishId);
     const img  = dish?.img || PLACEHOLDER_IMG;
-    const addonsTxt = addonNames([...(item.sides||[]), ...(item.drinks||[])]).join(", ");
+    const addonsTxt = addonNamesWithQty([...(item.sides||[]), ...(item.drinks||[])]).join(", ");
     return `
       <div class="flex items-center justify-between bg-base-100 border border-base-200 rounded-lg p-2 overflow-hidden">
         <div class="flex items-center gap-2 flex-1 min-w-0">
           <img src="${img}" class="w-10 h-10 rounded-md object-cover shrink-0" alt="">
           <div class="flex-1 min-w-0">
-            <div class="text-sm font-medium truncate">${dish?.name || "Dish"}</div>
+            <div class="text-sm font-medium truncate flex items-center">${dish?.name || "Dish"} ${qtyBadge(item.qty||1)}</div>
             <div class="text-xs text-base-content/60 truncate">${addonsTxt || "No add-ons"}</div>
           </div>
         </div>
@@ -724,7 +780,6 @@
       return;
     }
 
-    // Responsive columns that match up to 4 slots
     const colsClass =
       slots.length === 4 ? "lg:grid-cols-4 md:grid-cols-2 grid-cols-1" :
       slots.length === 3 ? "lg:grid-cols-3 md:grid-cols-2 grid-cols-1" :
@@ -741,7 +796,6 @@
           </div>
         </div>`;
 
-      // Open modal (ignore delete clicks)
       row.querySelectorAll("[data-open]").forEach((el) => {
         el.addEventListener("click", (e) => {
           if (e.target.closest('button[data-action="del-item"]')) return;
@@ -750,7 +804,6 @@
         });
       });
 
-      // Delete
       row.querySelectorAll('button[data-action="del-item"]').forEach((btn) => {
         btn.addEventListener("click", (e) => {
           e.preventDefault(); e.stopPropagation();
@@ -778,17 +831,20 @@
       slots.forEach((slot) => {
         (sel[slot].items || []).forEach((it) => {
           const dish = dishById(it.dishId);
-          const sidesCost  = (it.sides||[]).reduce((sum,id)=> sum + (SIDES.find(x=>x.id===id)?.price||0), 0);
-          const drinksCost = (it.drinks||[]).reduce((sum,id)=> sum + (DRINKS.find(x=>x.id===id)?.price||0), 0);
-          const cost = (dish?.price || 0) + sidesCost + drinksCost;
+          const dishQty = Math.max(1, it.qty || 1);
+          const base = (dish?.price || 0) * dishQty;
+
+          const sidesCost  = (it.sides||[]).reduce((sum, obj)=> sum + priceOfSide(obj.id)  * (obj.qty||0), 0);
+          const drinksCost = (it.drinks||[]).reduce((sum, obj)=> sum + priceOfDrink(obj.id) * (obj.qty||0), 0);
+          const cost = base + sidesCost + drinksCost;
           total += cost;
 
-          const names = addonNames([...(it.sides||[]), ...(it.drinks||[])]).join(", ");
+          const names = addonNamesWithQty([...(it.sides||[]), ...(it.drinks||[])]).join(", ");
           const li = document.createElement("li");
           li.className = "flex items-center gap-2";
           li.innerHTML = `
             <span class="text-base-content/80">${DAYS[i]} (${slotLabel(slot)})</span>
-            — <span class="font-medium">${dish?.name || ""}</span>
+            — <span class="font-medium">${dish?.name || ""} x${dishQty}</span>
             <span class="text-base-content/60">${names ? " | " + names : ""}</span>
             <span class="ml-auto">৳${cost}</span>`;
           summaryList.appendChild(li);
@@ -801,66 +857,199 @@
     saveToStorage();
   }
 
-  // ========= Modal: Multi-select + shared add-ons =========
+  // ========= Modal: Multi-select + quantities =========
   function updateSelectedCount() {
     const n = state.tempSelectedDishIds.size;
     selectedCountEl.textContent = `${n} selected`;
     nextToAddonsBtn.disabled = n === 0;
   }
 
-  function renderDishGrid() {
-    dishGrid.innerHTML = "";
-    const selected = state.tempSelectedDishIds;
+  function dishQtyRow(d) {
+    const row = document.createElement("div");
+    row.className = "flex items-center justify-between px-3 h-11 rounded-lg border border-base-200 bg-base-100";
+    row.innerHTML = `
+      <div class="truncate">${d.name}</div>
+      <div class="flex items-center gap-2">
+        <button type="button" class="btn btn-xs" data-dec>−</button>
+        <input type="number" class="input input-bordered input-xs w-16 text-center" min="1" value="${state.tempDishQty.get(d.id)||1}">
+        <button type="button" class="btn btn-xs" data-inc>+</button>
+      </div>
+    `;
+    const input = row.querySelector("input");
+    const setVal = (v)=> {
+      const n = Math.max(1, parseInt(v||"1",10));
+      state.tempDishQty.set(d.id, n);
+      input.value = n;
+    };
+    row.querySelector("[data-inc]").addEventListener("click", ()=> setVal((state.tempDishQty.get(d.id)||1)+1));
+    row.querySelector("[data-dec]").addEventListener("click", ()=> setVal((state.tempDishQty.get(d.id)||1)-1));
+    input.addEventListener("input", (e)=> setVal(e.target.value));
+    return row;
+  }
 
-    DISHES.forEach((d) => {
-      const card  = document.createElement("button");
-      const isSel = selected.has(d.id);
-      card.type = "button";
-      card.className = "relative card card-bordered bg-base-100 hover:shadow transition text-left overflow-hidden cursor-pointer";
-      card.innerHTML = `
-        <figure class="aspect-[4/3] overflow-hidden">
-          <img src="${d.img || PLACEHOLDER_IMG}" alt="${d.name}" loading="lazy" class="w-full h-full object-cover">
-        </figure>
-        <div class="card-body p-2">
-          <h4 class="card-title text-sm leading-tight truncate">${d.name}</h4>
-          <p class="text-xs text-base-content/70 truncate">${d.desc}</p>
-          <span class="badge badge-outline text-xs mt-1">৳${d.price}</span>
-        </div>
-        <div class="absolute top-2 right-2">
-          <input type="checkbox" ${isSel ? "checked" : ""} class="checkbox checkbox-primary checkbox-sm pointer-events-none" />
-        </div>`;
-      const toggle = () => {
-        if (selected.has(d.id)) selected.delete(d.id);
-        else selected.add(d.id);
-        // visual
-        card.querySelector("input[type='checkbox']").checked = selected.has(d.id);
-        card.classList.toggle("ring", selected.has(d.id));
-        card.classList.toggle("ring-primary", selected.has(d.id));
-        card.classList.toggle("ring-2", selected.has(d.id));
-        updateSelectedCount();
-      };
-      card.addEventListener("click", toggle);
-      if (isSel) card.classList.add("ring","ring-primary","ring-2");
-      dishGrid.appendChild(card);
+  function renderDishQtyList() {
+    dishQtyList.innerHTML = "";
+    const ids = Array.from(state.tempSelectedDishIds);
+    if (ids.length === 0) return;
+    ids.forEach(id => {
+      if (!state.tempDishQty.has(id)) state.tempDishQty.set(id, 1);
+      const d = dishById(id);
+      dishQtyList.appendChild(dishQtyRow(d));
     });
   }
 
-  function renderAddonsOptions(listEl, items, setRef) {
+  function renderDishGrid() {
+  dishGrid.innerHTML = "";
+  const selected = state.tempSelectedDishIds;
+
+  const adjustQty = (dishId, delta) => {
+    const current = state.tempDishQty.get(dishId) || 1;
+    const next = Math.max(1, current + delta);
+    state.tempDishQty.set(dishId, next);
+    // Update the visible number on the card (if present)
+    const span = dishGrid.querySelector(`[data-qty-for="${dishId}"]`);
+    if (span) span.textContent = next;
+  };
+
+  DISHES.forEach((d) => {
+    const isSel = selected.has(d.id);
+
+    const card  = document.createElement("div");
+    card.className = "relative card card-bordered bg-base-100 hover:shadow transition text-left overflow-hidden cursor-pointer";
+    card.innerHTML = `
+      <figure class="aspect-[4/3] overflow-hidden">
+        <img src="${d.img || PLACEHOLDER_IMG}" alt="${d.name}" loading="lazy" class="w-full h-full object-cover">
+      </figure>
+
+      <div class="card-body p-2">
+        <div class="flex items-center gap-2">
+          <h4 class="card-title text-sm leading-tight truncate">${d.name}</h4>
+          <!-- inline counter badge next to name when selected -->
+          <span data-badge-for="${d.id}" class="hidden text-[10px] px-2 h-5 rounded-full bg-slate-800 text-white">x<span data-qty-for="${d.id}">1</span></span>
+        </div>
+        <p class="text-xs text-base-content/70 truncate">${d.desc}</p>
+        <span class="badge badge-outline text-xs mt-1">৳${d.price}</span>
+      </div>
+
+      <!-- selection overlay (shown only when selected) -->
+      <div data-overlay-for="${d.id}" class="hidden absolute inset-0 bg-black/40 backdrop-blur-[1px]">
+        <div class="absolute inset-x-2 bottom-2 flex items-center justify-between gap-2">
+          <span class="text-white text-xs inline-flex items-center gap-1">
+            <i class="fa-solid fa-check"></i> Selected
+          </span>
+          <div class="flex items-center gap-2">
+            <button type="button" class="btn btn-xs" data-dec-for="${d.id}">−</button>
+            <input type="number" class="input input-bordered input-xs w-14 text-center" min="1" value="${state.tempDishQty.get(d.id)||1}" data-input-for="${d.id}">
+            <button type="button" class="btn btn-xs" data-inc-for="${d.id}">+</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // toggle selection by clicking card (avoid clicks on controls)
+    const toggle = (ev) => {
+      const onControl = ev.target.closest("button, input");
+      if (onControl) return; // don't toggle when using qty controls
+
+      if (selected.has(d.id)) {
+        selected.delete(d.id);
+        state.tempDishQty.delete(d.id);
+      } else {
+        selected.add(d.id);
+        if (!state.tempDishQty.has(d.id)) state.tempDishQty.set(d.id, 1);
+      }
+      reflectCardSelection(d.id);
+      updateSelectedCount();
+    };
+    card.addEventListener("click", toggle);
+
+    const reflectCardSelection = (dishId) => {
+      const active = selected.has(dishId);
+      // ring highlight
+      card.classList.toggle("ring", active);
+      card.classList.toggle("ring-primary", active);
+      card.classList.toggle("ring-2", active);
+      // show/hide overlay & badge
+      const overlay = card.querySelector(`[data-overlay-for="${dishId}"]`);
+      const badge   = card.querySelector(`[data-badge-for="${dishId}"]`);
+      if (overlay) overlay.classList.toggle("hidden", !active);
+      if (badge)   badge.classList.toggle("hidden", !active);
+      // sync qty values
+      const qty = state.tempDishQty.get(dishId) || 1;
+      const badgeNum = card.querySelector(`[data-qty-for="${dishId}"]`);
+      const input = card.querySelector(`[data-input-for="${dishId}"]`);
+      if (badgeNum) badgeNum.textContent = qty;
+      if (input) input.value = qty;
+    };
+
+    // wire +/− and manual input
+    card.addEventListener("click", (e) => {
+      const incBtn = e.target.closest(`[data-inc-for="${d.id}"]`);
+      const decBtn = e.target.closest(`[data-dec-for="${d.id}"]`);
+      const input  = e.target.closest(`[data-input-for="${d.id}"]`);
+      if (incBtn) {
+        e.preventDefault(); e.stopPropagation();
+        if (!selected.has(d.id)) { selected.add(d.id); state.tempDishQty.set(d.id, 1); }
+        adjustQty(d.id, +1);
+        reflectCardSelection(d.id);
+        updateSelectedCount();
+      } else if (decBtn) {
+        e.preventDefault(); e.stopPropagation();
+        if (!selected.has(d.id)) { selected.add(d.id); state.tempDishQty.set(d.id, 1); }
+        adjustQty(d.id, -1);
+        reflectCardSelection(d.id);
+        updateSelectedCount();
+      } else if (input) {
+        // let default input event handle it below
+      }
+    });
+
+    // manual typing
+    card.querySelector(`[data-input-for="${d.id}"]`)?.addEventListener("input", (ev) => {
+      ev.stopPropagation();
+      let v = parseInt(ev.target.value || "1", 10);
+      if (isNaN(v) || v < 1) v = 1;
+      state.tempDishQty.set(d.id, v);
+      const badgeNum = card.querySelector(`[data-qty-for="${d.id}"]`);
+      if (badgeNum) badgeNum.textContent = v;
+    });
+
+    // initial paint
+    dishGrid.appendChild(card);
+    // ensure default selection visuals are correct
+    if (isSel) {
+      if (!state.tempDishQty.has(d.id)) state.tempDishQty.set(d.id, 1);
+    }
+    reflectCardSelection(d.id);
+  });
+}
+
+
+  function renderAddonsOptions(listEl, items, mapRef) {
     listEl.innerHTML = "";
     items.forEach((item) => {
-      const row = document.createElement("label");
-      row.className = "flex items-center justify-between px-3 h-11 rounded-lg border border-base-200 hover:bg-base-100 cursor-pointer";
+      const row = document.createElement("div");
+      row.className = "flex items-center justify-between px-3 h-11 rounded-lg border border-base-200 hover:bg-base-100";
       row.innerHTML = `
-        <div class="flex items-center gap-3">
-          <input type="checkbox" class="checkbox checkbox-sm cursor-pointer" value="${item.id}">
-          <span>${item.name}</span>
+        <div class="flex items-center gap-2">
+          <span class="truncate">${item.name}</span>
+          <span class="text-xs opacity-70">৳${item.price}</span>
         </div>
-        <span class="text-sm">৳${item.price}</span>`;
+        <div class="flex items-center gap-2">
+          <button type="button" class="btn btn-xs" data-dec>−</button>
+          <input type="number" class="input input-bordered input-xs w-16 text-center" min="0" value="${mapRef.get(item.id)||0}">
+          <button type="button" class="btn btn-xs" data-inc>+</button>
+        </div>
+      `;
       const input = row.querySelector("input");
-      input.checked = setRef.has(item.id);
-      input.addEventListener("change", (e) => {
-        if (e.target.checked) setRef.add(item.id); else setRef.delete(item.id);
-      });
+      const setVal = (v)=> {
+        const n = Math.max(0, parseInt(v||"0",10));
+        if (n === 0) mapRef.delete(item.id); else mapRef.set(item.id, n);
+        input.value = n;
+      };
+      row.querySelector("[data-inc]").addEventListener("click", ()=> setVal((mapRef.get(item.id)||0)+1));
+      row.querySelector("[data-dec]").addEventListener("click", ()=> setVal((mapRef.get(item.id)||0)-1));
+      input.addEventListener("input", (e)=> setVal(e.target.value));
       listEl.appendChild(row);
     });
   }
@@ -874,29 +1063,63 @@
   }
 
   function openMultiSelectModal(dayIndex, mealSlot) {
-    if (state.mealPrefs.size === 0) {
-      alert("Please select at least one meal preference first.");
-      return;
-    }
-    state.activeDayIndex = dayIndex;
-    state.activeMealSlot = mealSlot;
-    state.tempSelectedDishIds = new Set();
-    state.tempSides  = new Set();
-    state.tempDrinks = new Set();
-    document.getElementById("modalTitle").textContent =
-      `${DAYS[dayIndex]} (${slotLabel(mealSlot)}) — Select dishes`;
-    goToStep(1);
-    renderDishGrid();
-    updateSelectedCount();
-    dlg.showModal();
+  if (state.mealPrefs.size === 0) {
+    alert("Please select at least one meal preference first.");
+    return;
   }
+  state.activeDayIndex = dayIndex;
+  state.activeMealSlot = mealSlot;
+
+  // reset temp state
+  state.tempSelectedDishIds = new Set();
+  state.tempDishQty = new Map();
+  state.tempSidesQty  = new Map();
+  state.tempDrinksQty = new Map();
+
+  // ---- Prefill from existing selections (so reopening remembers choices)
+  const existingItems = (state.selections[dayIndex][mealSlot]?.items) || [];
+
+  // 1) Dishes & quantities (aggregate by dishId)
+  const dishQtyAgg = new Map();
+  existingItems.forEach(it => {
+    const q = Math.max(1, it.qty || 1);
+    dishQtyAgg.set(it.dishId, (dishQtyAgg.get(it.dishId) || 0) + q);
+  });
+  dishQtyAgg.forEach((qty, dishId) => {
+    state.tempSelectedDishIds.add(dishId);
+    state.tempDishQty.set(dishId, qty);
+  });
+
+  // 2) Sides & Drinks (aggregate quantities by id)
+  existingItems.forEach(it => {
+    (it.sides || []).forEach(({id, qty}) => {
+      const n = Math.max(0, qty || 0);
+      if (n > 0) state.tempSidesQty.set(id, (state.tempSidesQty.get(id) || 0) + n);
+    });
+    (it.drinks || []).forEach(({id, qty}) => {
+      const n = Math.max(0, qty || 0);
+      if (n > 0) state.tempDrinksQty.set(id, (state.tempDrinksQty.get(id) || 0) + n);
+    });
+  });
+
+  // ---- UI
+  document.getElementById("modalTitle").textContent =
+    `${DAYS[dayIndex]} (${slotLabel(mealSlot)}) — Select dishes`;
+  goToStep(1);
+  renderDishGrid();      // will show cards already "Selected" with qty overlay
+  updateSelectedCount();
+  dlg.showModal();
+}
+
 
   nextToAddonsBtn.addEventListener("click", () => {
+    if (state.tempSelectedDishIds.size === 0) return;
     document.getElementById("modalTitle").textContent =
-      `${DAYS[state.activeDayIndex]} (${slotLabel(state.activeMealSlot)}) — Add-ons (optional)`;
+      `${DAYS[state.activeDayIndex]} (${slotLabel(state.activeMealSlot)}) — Quantities & Add-ons`;
     goToStep(2);
-    renderAddonsOptions(sidesList,  SIDES,  state.tempSides);
-    renderAddonsOptions(drinksList, DRINKS, state.tempDrinks);
+    renderDishQtyList();
+    renderAddonsOptions(sidesList,  SIDES,  state.tempSidesQty);
+    renderAddonsOptions(drinksList, DRINKS, state.tempDrinksQty);
   });
 
   backToDishesBtn.addEventListener("click", () => {
@@ -906,22 +1129,35 @@
   });
 
   confirmAddonsBtn.addEventListener("click", () => {
-    const i = state.activeDayIndex;
-    const slot = state.activeMealSlot;
-    if (i == null || !slot) return;
-    const items = state.selections[i][slot].items;
+  const i = state.activeDayIndex;
+  const slot = state.activeMealSlot;
+  if (i == null || !slot) return;
 
-    state.tempSelectedDishIds.forEach((dishId) => {
-      items.push({
-        dishId,
-        sides:  [...state.tempSides],
-        drinks: [...state.tempDrinks],
-      });
+  // Build new items from temp state
+  const sidesArr  = Array.from(state.tempSidesQty.entries()).map(([id, qty]) => ({ id, qty }));
+  const drinksArr = Array.from(state.tempDrinksQty.entries()).map(([id, qty]) => ({ id, qty }));
+
+  const newItems = [];
+  state.tempSelectedDishIds.forEach((dishId) => {
+    const qty = Math.max(1, state.tempDishQty.get(dishId) || 1);
+    newItems.push({
+      dishId,
+      qty,
+      // clone arrays so each item has its own references
+      sides:  sidesArr.map(x => ({ ...x })),
+      drinks: drinksArr.map(x => ({ ...x })),
     });
-
-    dlg.close();
-    renderDays(); renderSummary(); saveToStorage();
   });
+
+  // OVERWRITE this slot with the new selection
+  state.selections[i][slot].items = newItems;
+
+  dlg.close();
+  renderDays();
+  renderSummary();
+  saveToStorage();
+});
+
 
   // ========= Meal Pref / Start Date / Reset =========
   ["pref_breakfast","pref_lunch","pref_tiffin","pref_dinner"].forEach((id) => {
@@ -951,10 +1187,11 @@
 
   // ========= Init =========
   loadFromStorage();
-  reflectMealPrefUI();   // nothing checked by default
-  renderDays();          // shows helper message until user checks something
+  reflectMealPrefUI();
+  renderDays();
   renderSummary();
 </script>
+
 
 
     <!-- sidebar -->
